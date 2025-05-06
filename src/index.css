@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Party Theme Custom Styles */
+
+/* Background gradients using party colors */
+.bg-party-gradient {
+  background: linear-gradient(135deg, #FF4C4C, #4C9AFF, #FFD93D);
+}
+
+/* Text styles */
+.text-party-red {
+  color: #FF4C4C;
+}
+.text-party-blue {
+  color: #4C9AFF;
+}
+.text-party-yellow {
+  color: #FFD93D;
+}
+.text-party-purple {
+  color: #9B59B6;
+}
+.text-party-green {
+  color: #27AE60;
+}
+.text-party-pink {
+  color: #FF6F91;
+}
+
+/* Party-themed button */
+.btn-party {
+  @apply bg-circusRed text-white font-bold py-2 px-4 rounded shadow-lg hover:bg-balloonBlue transition-colors duration-300;
+}
+
+/* Confetti animation */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: #27AE60;
+  animation: confetti-fall 3s linear infinite;
+  opacity: 0.8;
+  border-radius: 2px;
+}
+
+/* Sparkle animation */
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+.sparkle {
+  display: inline-block;
+  color: #9B59B6;
+  animation: sparkle 1.5s ease-in-out infinite;
+}
