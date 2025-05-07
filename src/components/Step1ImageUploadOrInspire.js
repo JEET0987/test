@@ -70,29 +70,6 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
   }, [imageSrc]);
 
   return (
-<<<<<<< HEAD
-    <div className="space-y-4">
-      {!mode && (
-        <div className="space-x-4">
-          <button
-            onClick={() => setMode('upload')}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Upload an Image
-          </button>
-          <button
-            onClick={() => setMode('inspire')}
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-          >
-            Inspire Me
-          </button>
-        </div>
-      )}
-
-      {mode === 'upload' && (
-        <div>
-          <input type="file" accept="image/*" onChange={handleImageUpload} />
-=======
     <div>
       {!mode && (
         <div className="min-h-screen flex flex-col items-center justify-center p-6 sm:p-8 lg:p-12 transition-all duration-300" style={{ background: 'linear-gradient(to right bottom, rgb(245, 245, 245))' }}>
@@ -127,7 +104,6 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
           <p className="text-base sm:text-lg text-gray-600 mb-8">Select an image to upload and preview it before proceeding.</p>
           <label htmlFor="image-upload" className="cursor-pointer bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 px-6 rounded-xl text-lg shadow-lg hover:scale-105 transition-transform duration-300">📸 Choose Image</label>
           <input id="image-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden"/>
->>>>>>> 318b780 (Update project files)
           {imageSrc && (
             <div className="mt-4">
               <canvas
@@ -157,26 +133,12 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
           {selectedColor && (
             <button
               onClick={onNext}
-<<<<<<< HEAD
-              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-=======
               className="mt-4 px-6 py-2 bg-green-500 text-white py-3 px-6 rounded-xl text-lg shadow-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300-blue-600 text-white rounded hover:bg-blue-700"
->>>>>>> 318b780 (Update project files)
             >
               Next
             </button>
           )}
         </div>
-<<<<<<< HEAD
-      )}
-
-      {mode === 'inspire' && (
-        <div>
-          <p className="mb-2 font-semibold">Prepared to be Inspired</p>
-          <div className="grid grid-cols-4 gap-4 max-w-md">
-            {inspirationColors.map((color) => (
-              <div
-=======
         </div>
       )}
 
@@ -189,51 +151,32 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
           <div className="grid grid-cols-4 gap-6 justify-center">
             {inspirationColors.map((color) => (
               <button
->>>>>>> 318b780 (Update project files)
                 key={color.hex}
                 onClick={() => {
                   setSelectedColor(color);
                   setMessage(`You selected color: ${color.name} (${color.hex})`);
                 }}
-<<<<<<< HEAD
-                className={`h-12 w-12 rounded cursor-pointer border-4 ${
-                  selectedColor && selectedColor.hex === color.hex
-                    ? 'border-black'
-                    : 'border-transparent'
-=======
                 className={`h-16 w-16 rounded-full focus:outline-none ring-4 transition mx-auto ${
                   selectedColor && selectedColor.hex === color.hex
                     ? 'ring-black'
                     : 'ring-transparent'
->>>>>>> 318b780 (Update project files)
                 }`}
                 style={{ backgroundColor: color.hex }}
                 title={color.name}
               />
             ))}
           </div>
-<<<<<<< HEAD
-          {message && <p className="mt-2 text-lg font-semibold">{message}</p>}
-          {selectedColor && (
-            <button
-              onClick={onNext}
-              className="mt-4 px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-=======
           {message && <p className="mt-4 text-lg font-semibold">{message}</p>}
           {selectedColor && (
             <button
               onClick={onNext}
               className="mt-6 px-8 py-3 bg-black text-white font-bold rounded-full hover:bg-gray-800 transition mx-auto"
->>>>>>> 318b780 (Update project files)
             >
               Next
             </button>
           )}
         </div>
-<<<<<<< HEAD
-=======
         </div>
->>>>>>> 318b780 (Update project files)
       )}
     </div>
   );
