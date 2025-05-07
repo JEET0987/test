@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import LandingPage from './components/LandingPage';
 import Step1ImageUploadOrInspire from './components/Step1ImageUploadOrInspire';
 import Step2UserTypeSelection from './components/Step2UserTypeSelection';
 import Step3EventDescription from './components/Step3EventDescription';
+import Step4ThemeSelection from './components/Step4ThemeSelection';
 import Step4ProductDisplay from './components/Step4ProductDisplay';
 import Step5CartPreview from './components/Step5CartPreview';
+import RomanticProducts from './components/products/RomanticProducts';
+import CheckoutPage from './components/CheckoutPage';
 import { CartProvider } from './context/CartContext';
 
 function App() {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(1);
   const [selectedColor, setSelectedColor] = useState(null);
   const [userType, setUserType] = useState(null);
   const [eventDescription, setEventDescription] = useState('');
@@ -36,12 +38,11 @@ function App() {
   return (
     <CartProvider>
       <div className="min-h-screen bg-gray-50 flex flex-col">
-        <header className="bg-white shadow p-4 flex justify-between items-center">
-          <h1 className="text-xl font-bold">Build Your Occasion – Colour Match Tool</h1>
-          <Step5CartPreview />
+        <header className="flex justify-between items-center p-4 bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 text-white shadow-lg">
+          <h1 className="text-2xl font-bold cursor-pointer hover:scale-105 transition-all duration-300">Colour Match</h1>
+          <Step5CartPreview setStep={setStep} />
         </header>
         <main className="flex-grow container mx-auto p-4">
-          {step === 0 && <LandingPage onNext={() => setStep(1)} />}
           {step === 1 && (
             <Step1ImageUploadOrInspire
               selectedColor={selectedColor}
@@ -65,14 +66,29 @@ function App() {
             />
           )}
           {step === 4 && (
-            <Step4ProductDisplay
+            <Step4ThemeSelection
               themeSuggestions={themeSuggestions}
               selectedTheme={selectedTheme}
               setSelectedTheme={setSelectedTheme}
               onNext={() => setStep(5)}
             />
           )}
-          {step === 5 && <Step5CartPreview />}
+          {step === 5 && (
+            <>
+              {selectedTheme === 'Romantic' ? (
+                <RomanticProducts onNext={() => setStep(6)} />
+              ) : (
+                <Step4ProductDisplay
+                  themeSuggestions={themeSuggestions}
+                  selectedTheme={selectedTheme}
+                  setSelectedTheme={setSelectedTheme}
+                  onNext={() => setStep(6)}
+                />
+              )}
+            </>
+          )}
+          {step === 6 && <Step5CartPreview setStep={setStep} />}
+          {step === 7 && <CheckoutPage onBack={(step) => setStep(step)} />}
         </main>
       </div>
     </CartProvider>
