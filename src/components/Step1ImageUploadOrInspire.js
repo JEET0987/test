@@ -42,8 +42,12 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    // Calculate scale factors between canvas size and displayed size
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    // Adjust click coordinates to canvas pixel coordinates
+    const x = Math.floor((e.clientX - rect.left) * scaleX);
+    const y = Math.floor((e.clientY - rect.top) * scaleY);
     const pixel = ctx.getImageData(x, y, 1, 1).data;
     const hex = rgbToHex(pixel[0], pixel[1], pixel[2]);
     setSelectedColor({ hex });
