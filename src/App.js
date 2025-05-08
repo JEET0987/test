@@ -9,6 +9,11 @@ import RomanticProducts from './components/products/RomanticProducts';
 import CheckoutPage from './components/CheckoutPage';
 import { CartProvider } from './context/CartContext';
 
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+
+const stripePromise = loadStripe('pk_test_12345ReplaceWithYourOwnKey');
+
 function App() {
   const [step, setStep] = useState(1);
   const [selectedColor, setSelectedColor] = useState(null);
@@ -37,7 +42,7 @@ function App() {
 
   return (
     <CartProvider>
-      
+      <Elements stripe={stripePromise}>
         <header className="flex justify-between items-center p-4 bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 text-white shadow-lg">
           <h1 className="text-2xl font-bold cursor-pointer hover:scale-105 transition-all duration-300">Colour Match</h1>
           <Step5CartPreview setStep={setStep} />
@@ -89,8 +94,7 @@ function App() {
           )}
           {step === 6 && <Step5CartPreview setStep={setStep} />}
           {step === 7 && <CheckoutPage onBack={(step) => setStep(step)} />}
-        
-      
+      </Elements>
     </CartProvider>
   );
 

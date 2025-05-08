@@ -1,15 +1,52 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { CartContext } from '../context/CartContext';
+import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
 const CheckoutPage = ({ onBack }) => {
   const { cartItems, totalPrice, clearCart } = useContext(CartContext);
+  const stripe = useStripe();
+  const elements = useElements();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
 
-  const handleCheckout = () => {
-    alert('Thank you for your purchase!');
+  const handleCheckout = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    if (!stripe || !elements) {
+      setError('Stripe has not loaded yet.');
+      setLoading(false);
+      return;
+    }
+
+    // Simulate payment processing delay
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    // Simulate successful payment
+    setSuccess(true);
     clearCart();
-    // After confirming purchase, navigate back to step 1 (Step1ImageUploadOrInspire)
-    onBack(1);
+
+    setLoading(false);
   };
+
+  if (success) {
+    return (
+      <div className="flex justify-center p-6">
+        <div className="max-w-3xl w-full p-6 bg-white rounded shadow text-center">
+          <h2 className="text-2xl font-bold mb-4">Payment Successful!</h2>
+          <p>Thank you for your purchase.</p>
+          <button
+            onClick={() => onBack(1)}
+            className="mt-6 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition"
+          >
+            Back to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex justify-center p-6">
@@ -18,7 +55,7 @@ const CheckoutPage = ({ onBack }) => {
         {cartItems.length === 0 ? (
           <p>Your cart is empty.</p>
         ) : (
-          <>
+          <form onSubmit={handleCheckout}>
             <ul className="mb-4">
               {cartItems.map((item) => (
                 <li key={item.id} className="flex justify-between py-2 border-b items-center">
@@ -38,19 +75,25 @@ const CheckoutPage = ({ onBack }) => {
               <span>Total:</span>
               <span>₹{totalPrice.toFixed(2)}</span>
             </div>
+            <div className="mb-4">
+              <CardElement options={{ hidePostalCode: false }} />
+            </div>
+            {error && <p className="text-red-600 mb-4">{error}</p>}
             <button
-              onClick={handleCheckout}
-              className="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700 transition"
+              type="submit"
+              disabled={!stripe || loading}
+              className="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700 transition disabled:opacity-50"
             >
-              Confirm Purchase
+              {loading ? 'Processing...' : 'Confirm Purchase'}
             </button>
             <button
+              type="button"
               onClick={() => onBack(1)}
               className="mt-4 w-full bg-gray-300 text-gray-700 py-2 rounded hover:bg-gray-400 transition"
             >
               Back to Cart
             </button>
-          </>
+          </form>
         )}
       </div>
     </div>
