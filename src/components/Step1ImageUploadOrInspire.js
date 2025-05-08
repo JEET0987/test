@@ -103,58 +103,50 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
             <p className="text-base sm:text-lg text-gray-600 mb-8">Select an image to upload and preview it before proceeding.</p>
             <label htmlFor="image-upload" className="cursor-pointer bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 px-6 rounded-xl text-lg shadow-lg hover:scale-105 transition-transform duration-300">📸 Choose Image</label>
             <input id="image-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-            {imageSrc && (
-              <div className="mt-4 flex items-center space-x-4 justify-center">
-                <canvas
-                  ref={canvasRef}
-                  onClick={handleCanvasClick}
-                  className="border border-gray-300 max-w-full h-auto cursor-crosshair"
-                />
-                <img
-                  ref={imageRef}
-                  src={imageSrc}
-                  alt="Uploaded"
-                  className="hidden"
-                  onLoad={() => {
-                    if (canvasRef.current && imageRef.current) {
-                      const canvas = canvasRef.current;
-                      const ctx = canvas.getContext('2d');
-                      const img = imageRef.current;
-                      canvas.width = img.naturalWidth;
-                      canvas.height = img.naturalHeight;
-                      ctx.drawImage(img, 0, 0);
-                    }
-                  }}
-                />
-                {selectedColor && (
-                  <div className="flex items-center space-x-2">
-                    <div
-                      className="w-6 h-6 rounded-full border border-gray-400"
-                      style={{ backgroundColor: selectedColor?.hex || selectedColor }}
-                    />
-                    <span className="text-lg font-semibold">{selectedColor?.hex || selectedColor}</span>
-                  </div>
-                )}
-              </div>
-            )}
-            {/* Removed the color circle and hex display below the image as per user feedback */}
-            {/* {message && (
-              <div className="mt-2 flex items-center justify-center space-x-2">
-                <div
-                  className="w-6 h-6 rounded-full border border-gray-400"
-                  style={{ backgroundColor: selectedColor?.hex || selectedColor }}
-                />
-                <span className="text-lg font-semibold">{selectedColor?.hex || selectedColor}</span>
-              </div>
-            )} */}
-            {selectedColor && (
-              <button
-                onClick={onNext}
-                className="mt-4 px-6 py-2 bg-green-500 text-white py-3 px-6 rounded-xl text-lg shadow-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                Next
-              </button>
-            )}
+{imageSrc && (
+<div className="mt-4 flex items-start justify-center space-x-12 max-w-full mx-auto px-4">
+<canvas
+  ref={canvasRef}
+  onClick={handleCanvasClick}
+  className="border border-gray-300 max-w-[75%] max-h-[450px] h-auto cursor-crosshair"
+/>
+    <div className="flex flex-col items-center space-y-6 ml-10 pt-16 min-w-[160px]">
+      {selectedColor && (
+        <div className="flex items-center space-x-3">
+          <div
+            className="w-7 h-7 rounded-full border border-gray-400"
+            style={{ backgroundColor: selectedColor?.hex || selectedColor }}
+          />
+          <span className="text-xl font-semibold">{selectedColor?.hex || selectedColor}</span>
+        </div>
+      )}
+      {selectedColor && (
+        <button
+          onClick={onNext}
+          className="px-8 py-4 bg-green-500 text-white rounded-xl text-lg shadow-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+        >
+          Next
+        </button>
+      )}
+    </div>
+    <img
+      ref={imageRef}
+      src={imageSrc}
+      alt="Uploaded"
+      className="hidden"
+      onLoad={() => {
+        if (canvasRef.current && imageRef.current) {
+          const canvas = canvasRef.current;
+          const ctx = canvas.getContext('2d');
+          const img = imageRef.current;
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+          ctx.drawImage(img, 0, 0);
+        }
+      }}
+    />
+  </div>
+)}
           </div>
         </div>
       )}
