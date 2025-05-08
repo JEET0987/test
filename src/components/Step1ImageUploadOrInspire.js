@@ -98,13 +98,13 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
 
       {mode === 'upload' && (
         <div className="min-h-screen flex items-center justify-center p-6 sm:p-8 lg:p-10 bg-gradient-to-r from-blue-50 via-purple-100 to-pink-100">
-          <div className="bg-white/90 p-8 sm:p-10 rounded-2xl shadow-2xl max-w-lg w-full text-center backdrop-blur-md">
+          <div className={`bg-white/90 p-8 sm:p-10 rounded-2xl shadow-2xl w-full text-center backdrop-blur-md ${selectedColor ? 'max-w-2xl' : 'max-w-lg'}`}>
             <h1 className="text-3xl sm:text-4xl font-semibold text-gray-800 mb-6">Upload Your Image</h1>
             <p className="text-base sm:text-lg text-gray-600 mb-8">Select an image to upload and preview it before proceeding.</p>
             <label htmlFor="image-upload" className="cursor-pointer bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 px-6 rounded-xl text-lg shadow-lg hover:scale-105 transition-transform duration-300">📸 Choose Image</label>
             <input id="image-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
             {imageSrc && (
-              <div className="mt-4">
+              <div className="mt-4 flex items-center space-x-4 justify-center">
                 <canvas
                   ref={canvasRef}
                   onClick={handleCanvasClick}
@@ -126,9 +126,19 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
                     }
                   }}
                 />
+                {selectedColor && (
+                  <div className="flex items-center space-x-2">
+                    <div
+                      className="w-6 h-6 rounded-full border border-gray-400"
+                      style={{ backgroundColor: selectedColor?.hex || selectedColor }}
+                    />
+                    <span className="text-lg font-semibold">{selectedColor?.hex || selectedColor}</span>
+                  </div>
+                )}
               </div>
             )}
-            {message && (
+            {/* Removed the color circle and hex display below the image as per user feedback */}
+            {/* {message && (
               <div className="mt-2 flex items-center justify-center space-x-2">
                 <div
                   className="w-6 h-6 rounded-full border border-gray-400"
@@ -136,7 +146,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
                 />
                 <span className="text-lg font-semibold">{selectedColor?.hex || selectedColor}</span>
               </div>
-            )}
+            )} */}
             {selectedColor && (
               <button
                 onClick={onNext}
