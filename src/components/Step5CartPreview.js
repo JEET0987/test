@@ -1,12 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { CartContext } from '../context/CartContext';
 
-<<<<<<< HEAD
-const Step5CartPreview = () => {
-  const { cartItems, itemCount, totalPrice, removeFromCart, clearCart } = useContext(CartContext);
-  const [showCart, setShowCart] = useState(false);
-
-=======
 const Step5CartPreview = ({ setStep }) => {
   const { cartItems, itemCount, totalPrice, removeFromCart, clearCart } = useContext(CartContext);
   const [showCart, setShowCart] = useState(false);
@@ -16,7 +10,6 @@ const Step5CartPreview = ({ setStep }) => {
     setStep(7);
   };
 
->>>>>>> 318b780 (Update project files)
   return (
     <div className="relative">
       <button
@@ -46,24 +39,25 @@ const Step5CartPreview = ({ setStep }) => {
         <div className="absolute right-0 mt-2 w-72 bg-white border border-gray-300 rounded shadow-lg z-10 p-4">
           <h3 className="text-lg font-semibold mb-2">Cart Preview</h3>
           {cartItems.length === 0 ? (
-<<<<<<< HEAD
-            <p>Your cart is empty.</p>
-=======
-            <p class="text-gray-700 text-center">Your cart is empty.</p>
->>>>>>> 318b780 (Update project files)
+            <p className="text-gray-700 text-center">Your cart is empty.</p>
           ) : (
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {cartItems.map((item) => (
                 <div key={item.id} className="flex justify-between items-center border-b border-gray-200 pb-1">
-                  <div>
-<<<<<<< HEAD
-                    <p className="font-semibold">{item.name}</p>
-=======
-                    <span style={{ color: 'black', fontWeight: '600' }}>{item.name}</span>
->>>>>>> 318b780 (Update project files)
-                    <p className="text-sm text-gray-600">
-                      ${item.price.toFixed(2)} x {item.quantity}
-                    </p>
+                  <div className="flex items-center space-x-2">
+                    {item.image && (
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-12 h-12 object-cover rounded"
+                      />
+                    )}
+                    <div>
+                      <span style={{ color: 'black', fontWeight: '600' }}>{item.name}</span>
+                      <p className="text-sm text-gray-600">
+                        ${item.price.toFixed(2)} x {item.quantity}
+                      </p>
+                    </div>
                   </div>
                   <button
                     onClick={() => removeFromCart(item.id)}
@@ -84,15 +78,12 @@ const Step5CartPreview = ({ setStep }) => {
               >
                 Clear Cart
               </button>
-<<<<<<< HEAD
-=======
               <button
                 onClick={handleCheckoutClick}
                 className="mt-2 w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
               >
                 Checkout
               </button>
->>>>>>> 318b780 (Update project files)
             </div>
           )}
         </div>

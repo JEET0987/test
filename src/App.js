@@ -37,12 +37,12 @@ function App() {
 
   return (
     <CartProvider>
-      <div className="min-h-screen bg-gray-50 flex flex-col">
+      
         <header className="flex justify-between items-center p-4 bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 text-white shadow-lg">
           <h1 className="text-2xl font-bold cursor-pointer hover:scale-105 transition-all duration-300">Colour Match</h1>
           <Step5CartPreview setStep={setStep} />
         </header>
-        <main className="flex-grow container mx-auto p-4">
+        
           {step === 1 && (
             <Step1ImageUploadOrInspire
               selectedColor={selectedColor}
@@ -89,8 +89,8 @@ function App() {
           )}
           {step === 6 && <Step5CartPreview setStep={setStep} />}
           {step === 7 && <CheckoutPage onBack={(step) => setStep(step)} />}
-        </main>
-      </div>
+        
+      
     </CartProvider>
   );
 }
