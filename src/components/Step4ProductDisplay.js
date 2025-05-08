@@ -233,6 +233,7 @@ const Step4ProductDisplay = ({ selectedTheme = 'Default' }) => {
     const quantity = quantities[product.id] || 1;
     if (quantity > 0) {
       addToCart(product, quantity);
+      alert('Successfully added to cart');
       setQuantities((prev) => ({ ...prev, [product.id]: 0 }));
     }
   };
