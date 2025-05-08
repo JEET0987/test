@@ -280,11 +280,8 @@ const Step4ProductDisplay = ({ selectedTheme = 'Default' }) => {
               className="w-full h-56 object-cover"
             />
             {balloonThemes.includes(selectedTheme) && (
-              <img
-                src={balloonImage}
-                alt="Balloon"
-                className="absolute top-2 right-2 w-10 h-10 opacity-70 pointer-events-none"
-              />
+              <>
+              </>
             )}
             <div className="p-4">
               <h3 className="text-xl font-semibold text-gray-800">{product.name}</h3>

@@ -5,7 +5,6 @@ import Step3EventDescription from './components/Step3EventDescription';
 import Step4ThemeSelection from './components/Step4ThemeSelection';
 import Step4ProductDisplay from './components/Step4ProductDisplay';
 import Step5CartPreview from './components/Step5CartPreview';
-import RomanticProducts from './components/products/RomanticProducts';
 import CheckoutPage from './components/CheckoutPage';
 import { CartProvider } from './context/CartContext';
 
@@ -79,18 +78,12 @@ function App() {
             />
           )}
           {step === 5 && (
-            <>
-              {selectedTheme === 'Romantic' ? (
-                <RomanticProducts onNext={() => setStep(6)} />
-              ) : (
-                <Step4ProductDisplay
-                  themeSuggestions={themeSuggestions}
-                  selectedTheme={selectedTheme}
-                  setSelectedTheme={setSelectedTheme}
-                  onNext={() => setStep(6)}
-                />
-              )}
-            </>
+            <Step4ProductDisplay
+              themeSuggestions={themeSuggestions}
+              selectedTheme={selectedTheme}
+              setSelectedTheme={setSelectedTheme}
+              onNext={() => setStep(6)}
+            />
           )}
           {step === 6 && <Step5CartPreview setStep={setStep} />}
           {step === 7 && <CheckoutPage onBack={(step) => setStep(step)} />}
