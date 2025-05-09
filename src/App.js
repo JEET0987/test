@@ -1,28 +1,58 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import Step1ImageUploadOrInspire from './components/Step1ImageUploadOrInspire';
 import Step2UserTypeSelection from './components/Step2UserTypeSelection';
 import Step3EventDescription from './components/Step3EventDescription';
 import Step4ThemeSelection from './components/Step4ThemeSelection';
 import Step4ProductDisplay from './components/Step4ProductDisplay';
-import Step5CartPreview from './components/Step5CartPreview';
 import CheckoutPage from './components/CheckoutPage';
+import ConfirmationPage from './components/ConfirmationPage';
+import ThankYouPage from './components/ThankYouPage';
 import { CartProvider } from './context/CartContext';
+import HeroLanding from './components/HeroLanding';
 
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 
 const stripePromise = loadStripe('pk_test_12345ReplaceWithYourOwnKey');
 
-function App() {
-  const [step, setStep] = useState(1);
-  const [selectedColor, setSelectedColor] = useState(null);
-  const [userType, setUserType] = useState(null);
-  const [eventDescription, setEventDescription] = useState('');
-  const [themeSuggestions, setThemeSuggestions] = useState([]);
-  const [selectedTheme, setSelectedTheme] = useState(null);
+// State management context
+const AppStateContext = React.createContext();
 
-  // Function to handle event description submit and generate theme suggestions
-  const handleEventSubmit = (description) => {
+// Wrapper components to handle navigation
+const Step1Wrapper = () => {
+  const navigate = useNavigate();
+  const { selectedColor, setSelectedColor } = React.useContext(AppStateContext);
+  
+  return (
+    <Step1ImageUploadOrInspire
+      selectedColor={selectedColor}
+      setSelectedColor={setSelectedColor}
+      onNext={() => navigate('/step2')}
+    />
+  );
+};
+
+const Step2Wrapper = () => {
+  const navigate = useNavigate();
+  const { selectedColor, userType, setUserType } = React.useContext(AppStateContext);
+  
+  return (
+    <Step2UserTypeSelection
+      userType={userType}
+      setUserType={setUserType}
+      selectedColor={selectedColor}
+      onNext={() => navigate('/step3')}
+      onBack={() => navigate('/')}
+    />
+  );
+};
+
+const Step3Wrapper = () => {
+  const navigate = useNavigate();
+  const { selectedColor, userType, setEventDescription, setThemeSuggestions } = React.useContext(AppStateContext);
+  
+  const handleSubmit = (description) => {
     setEventDescription(description);
     const desc = description.toLowerCase();
     const suggestions = [];
@@ -36,61 +66,96 @@ function App() {
       suggestions.push('Classic', 'Modern', 'Festive');
     }
     setThemeSuggestions(suggestions);
-    setStep(4);
+    navigate('/step4');
   };
 
   return (
-    <CartProvider>
-      <Elements stripe={stripePromise}>
-        <header className="flex justify-between items-center p-4 bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 text-white shadow-lg">
-          <h1 className="text-2xl font-bold cursor-pointer hover:scale-105 transition-all duration-300">Colour Match</h1>
-          <Step5CartPreview setStep={setStep} />
-        </header>
-        
-          {step === 1 && (
-            <Step1ImageUploadOrInspire
-              selectedColor={selectedColor}
-              setSelectedColor={setSelectedColor}
-              onNext={() => setStep(2)}
-            />
-          )}
-          {step === 2 && (
-            <Step2UserTypeSelection
-              userType={userType}
-              setUserType={setUserType}
-              selectedColor={selectedColor}
-              onNext={() => setStep(3)}
-            />
-          )}
-          {step === 3 && (
-            <Step3EventDescription
-              onSubmit={handleEventSubmit}
-              selectedColor={selectedColor}
-              userType={userType}
-            />
-          )}
-          {step === 4 && (
-            <Step4ThemeSelection
-              themeSuggestions={themeSuggestions}
-              selectedTheme={selectedTheme}
-              setSelectedTheme={setSelectedTheme}
-              onNext={() => setStep(5)}
-            />
-          )}
-          {step === 5 && (
-            <Step4ProductDisplay
-              themeSuggestions={themeSuggestions}
-              selectedTheme={selectedTheme}
-              setSelectedTheme={setSelectedTheme}
-              onNext={() => setStep(6)}
-            />
-          )}
-          {step === 6 && <Step5CartPreview setStep={setStep} />}
-          {step === 7 && <CheckoutPage onBack={(step) => setStep(step)} />}
-      </Elements>
-    </CartProvider>
+    <Step3EventDescription
+      onSubmit={handleSubmit}
+      selectedColor={selectedColor}
+      userType={userType}
+      onBack={() => navigate('/step2')}
+    />
   );
+};
 
+const Step4Wrapper = () => {
+  const navigate = useNavigate();
+  const { themeSuggestions, selectedTheme, setSelectedTheme } = React.useContext(AppStateContext);
+  
+  return (
+    <Step4ThemeSelection
+      themeSuggestions={themeSuggestions}
+      selectedTheme={selectedTheme}
+      setSelectedTheme={setSelectedTheme}
+      onNext={() => navigate('/step5')}
+      onBack={() => navigate('/step3')}
+    />
+  );
+};
+
+const Step5Wrapper = () => {
+  const navigate = useNavigate();
+  const { themeSuggestions, selectedTheme, setSelectedTheme } = React.useContext(AppStateContext);
+  
+  return (
+    <Step4ProductDisplay
+      themeSuggestions={themeSuggestions}
+      selectedTheme={selectedTheme}
+      setSelectedTheme={setSelectedTheme}
+      onNext={() => navigate('/confirmation')}
+      onBack={() => navigate('/step4')}
+    />
+  );
+};
+
+const CheckoutWrapper = () => {
+  const navigate = useNavigate();
+  return <CheckoutPage onBack={() => navigate('/thank-you')} />;
+};
+
+function App() {
+  const [selectedColor, setSelectedColor] = useState(null);
+  const [userType, setUserType] = useState(null);
+  const [eventDescription, setEventDescription] = useState('');
+  const [themeSuggestions, setThemeSuggestions] = useState([]);
+  const [selectedTheme, setSelectedTheme] = useState(null);
+
+  const appState = {
+    selectedColor,
+    setSelectedColor,
+    userType,
+    setUserType,
+    eventDescription,
+    setEventDescription,
+    themeSuggestions,
+    setThemeSuggestions,
+    selectedTheme,
+    setSelectedTheme
+  };
+
+  return (
+    <Router>
+      <AppStateContext.Provider value={appState}>
+        <CartProvider>
+          <Elements stripe={stripePromise}>
+            <Routes>
+              <Route path="/" element={<HeroLanding />} />
+              <Route path="/step1" element={<Step1Wrapper />} />
+              <Route path="/step2" element={<Step2Wrapper />} />
+              <Route path="/step3" element={<Step3Wrapper />} />
+              <Route path="/step4" element={<Step4Wrapper />} />
+              <Route path="/step5" element={<Step5Wrapper />} />
+              <Route path="/confirmation" element={<ConfirmationPage />} />
+              <Route path="/checkout" element={<CheckoutWrapper />} />
+              <Route path="/thank-you" element={<ThankYouPage />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Elements>
+        </CartProvider>
+      </AppStateContext.Provider>
+    </Router>
+  );
 }
 
 export default App;

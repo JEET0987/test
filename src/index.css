@@ -2,36 +2,123 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --background: 270 50% 98%;
+    --foreground: 270 50% 10%;
+    --card: 270 50% 100%;
+    --card-foreground: 270 50% 10%;
+    --popover: 270 50% 100%;
+    --popover-foreground: 270 50% 10%;
+    --primary: 270 50% 50%;
+    --primary-foreground: 270 50% 98%;
+    --secondary: 270 30% 90%;
+    --secondary-foreground: 270 50% 10%;
+    --muted: 270 30% 90%;
+    --muted-foreground: 270 30% 45%;
+    --accent: 270 30% 90%;
+    --accent-foreground: 270 50% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 270 30% 85%;
+    --input: 270 30% 85%;
+    --ring: 270 50% 50%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 270 50% 10%;
+    --foreground: 270 50% 98%;
+    --card: 270 50% 15%;
+    --card-foreground: 270 50% 98%;
+    --popover: 270 50% 15%;
+    --popover-foreground: 270 50% 98%;
+    --primary: 270 50% 60%;
+    --primary-foreground: 270 50% 98%;
+    --secondary: 270 30% 25%;
+    --secondary-foreground: 270 50% 98%;
+    --muted: 270 30% 25%;
+    --muted-foreground: 270 30% 70%;
+    --accent: 270 30% 25%;
+    --accent-foreground: 270 50% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 270 30% 25%;
+    --input: 270 30% 25%;
+    --ring: 270 50% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .container {
+    @apply px-4 mx-auto max-w-7xl sm:px-6 lg:px-8;
+  }
+
+  .prose {
+    @apply max-w-prose mx-auto;
+  }
+
+  .section {
+    @apply py-12 md:py-16 lg:py-20;
+  }
+
+  /* Party-themed button */
+  .btn-party {
+    @apply bg-primary text-primary-foreground font-bold py-2 px-4 rounded shadow-lg hover:bg-accent hover:text-accent-foreground transition-colors duration-300;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-hide {
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+  }
+}
+
 /* Party Theme Custom Styles */
 
-/* Background gradients using party colors */
+/* Background gradients using purple tones */
 .bg-party-gradient {
-  background: linear-gradient(135deg, #FF4C4C, #4C9AFF, #FFD93D);
+  background: linear-gradient(135deg, #9B59B6, #8E44AD, #6C3483);
 }
 
 /* Text styles */
-.text-party-red {
-  color: #FF4C4C;
-}
-.text-party-blue {
-  color: #4C9AFF;
-}
-.text-party-yellow {
-  color: #FFD93D;
-}
 .text-party-purple {
   color: #9B59B6;
 }
-.text-party-green {
-  color: #27AE60;
+.text-party-dark-purple {
+  color: #8E44AD;
 }
-.text-party-pink {
-  color: #FF6F91;
+.text-party-darker-purple {
+  color: #6C3483;
 }
-
-/* Party-themed button */
-.btn-party {
-  @apply bg-circusRed text-white font-bold py-2 px-4 rounded shadow-lg hover:bg-balloonBlue transition-colors duration-300;
+.text-party-light-purple {
+  color: #BB8FCE;
+}
+.text-party-lighter-purple {
+  color: #D2B4DE;
 }
 
 /* Confetti animation */
@@ -50,7 +137,7 @@
   position: absolute;
   width: 10px;
   height: 10px;
-  background-color: #27AE60;
+  background-color: #9B59B6;
   animation: confetti-fall 3s linear infinite;
   opacity: 0.8;
   border-radius: 2px;

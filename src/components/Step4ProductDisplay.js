@@ -2,6 +2,8 @@ import React, { useState, useContext } from 'react';
 import { CartContext } from '../context/CartContext';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Header from './Header';
+import Footer from './Footer';
 
 const productsByTheme = {
   Circus: [
@@ -217,14 +219,10 @@ const Step4ProductDisplay = ({ selectedTheme = 'Default' }) => {
       if (sortBy === 'price') {
         return a.price - b.price;
       } else if (sortBy === 'popularity') {
-        // Assuming popularity is not defined, keep original order
         return 0;
       }
       return 0;
     });
-
-  // Themes that should show balloon images
-  const balloonThemes = ['Romantic', 'Pastel'];
 
   const handleQuantityChange = (productId, value) => {
     const qty = Math.max(0, Number(value));
@@ -241,72 +239,102 @@ const Step4ProductDisplay = ({ selectedTheme = 'Default' }) => {
   };
 
   return (
-    <div className="min-h-screen p-6 bg-gradient-to-r from-pink-100 via-purple-100 to-blue-200">
-      <h2 className="text-3xl font-semibold text-gray-800 text-center mb-8">
-        Products for "{selectedTheme}"
-      </h2>
-      <div className="mb-6 flex flex-wrap justify-center gap-4">
-        <input
-          type="text"
-          placeholder="Search by product name..."
-          className="p-3 rounded-xl border-2 border-gray-300 text-lg w-72"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <div>
-          <label htmlFor="sort" className="mr-2 text-lg font-semibold text-gray-800">
-            Sort by:
-          </label>
-          <select
-            id="sort"
-            className="p-3 rounded-xl border-2 border-gray-300 text-lg"
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-          >
-            <option value="price">Price: Low to High</option>
-            <option value="popularity">Popularity</option>
-          </select>
-        </div>
-      </div>
-      <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredProducts.map((product) => (
-          <div
-            key={product.id}
-            className="relative bg-white rounded-xl shadow-lg overflow-hidden transform hover:scale-105 hover:shadow-2xl transition-all duration-300"
-          >
-            <img
-              src={product.image}
-              alt={product.name}
-              className="w-full h-56 object-cover"
-            />
-            {balloonThemes.includes(selectedTheme) && (
-              <>
-              </>
-            )}
-            <div className="p-4">
-              <h3 className="text-xl font-semibold text-gray-800">{product.name}</h3>
-              <p className="text-lg text-gray-600 mt-2">₹{product.price}</p>
-              <div className="mt-4 flex items-center gap-2">
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <div className="flex-1">
+        <div className="bg-white py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+                Products for "{selectedTheme}"
+              </h2>
+              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                Discover our curated collection of decorations and accessories
+              </p>
+            </div>
+            
+            <div className="mb-12 flex flex-col sm:flex-row justify-center gap-4 max-w-3xl mx-auto">
+              <div className="relative flex-1">
                 <input
-                  type="number"
-                  min="0"
-                  value={quantities[product.id] || ''}
-                  onChange={(e) => handleQuantityChange(product.id, e.target.value)}
-                  className="w-20 p-2 border-2 border-gray-300 rounded-xl text-lg"
-                  placeholder="Qty"
+                  type="text"
+                  placeholder="Search by product name..."
+                  className="w-full p-4 rounded-lg border-2 border-gray-200 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
-                <button
-                  onClick={() => handleAddToCart(product)}
-                  className="bg-indigo-500 text-white py-2 px-4 rounded-xl text-lg font-semibold hover:bg-indigo-600 transition-all duration-300"
+              </div>
+              <div className="flex items-center gap-3">
+                <label htmlFor="sort" className="text-gray-700 font-medium">
+                  Sort by:
+                </label>
+                <select
+                  id="sort"
+                  className="p-4 rounded-lg border-2 border-gray-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
                 >
-                  Add to Cart
-                </button>
+                  <option value="price">Price: Low to High</option>
+                  <option value="popularity">Popularity</option>
+                </select>
               </div>
             </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {filteredProducts.map((product) => (
+                <div
+                  key={product.id}
+                  className="group bg-white rounded-lg border-2 border-gray-200 shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300"
+                >
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2">{product.name}</h3>
+                    <p className="text-2xl font-bold text-black mb-4">₹{product.price}</p>
+                    <div className="flex items-center gap-4 mb-4">
+                      <label htmlFor={`quantity-${product.id}`} className="text-gray-700 font-medium">
+                        Quantity:
+                      </label>
+                      <input
+                        type="number"
+                        id={`quantity-${product.id}`}
+                        min="0"
+                        value={quantities[product.id] || 0}
+                        onChange={(e) => handleQuantityChange(product.id, e.target.value)}
+                        className="w-20 p-2 rounded-lg border-2 border-gray-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                      />
+                    </div>
+                    <button 
+                      onClick={() => handleAddToCart(product)}
+                      className="w-full bg-black text-white py-3 rounded-lg text-lg font-semibold hover:bg-gray-800 transform hover:-translate-y-0.5 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                    >
+                      Add to Cart
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-        ))}
+        </div>
       </div>
-      <ToastContainer />
+      <Footer />
+      <ToastContainer
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 };
