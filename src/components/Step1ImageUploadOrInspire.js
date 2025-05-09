@@ -44,6 +44,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
   const dropZoneRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const categories = ['All', 'Warm', 'Cool', 'Neutral'];
 
@@ -53,13 +54,14 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     }
   }, [selectedColor]);
 
-  const handleImageUpload = (file) => {
-    if (file && file.type.startsWith('image/')) {
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
       const reader = new FileReader();
-      reader.onload = (ev) => {
-        setImageSrc(ev.target.result);
+      reader.onload = (e) => {
+        setImageSrc(e.target.result);
         setSelectedColor(null);
-        setMessage('');
+        setMessage('Image uploaded successfully! Click on the image to select a color.');
       };
       reader.readAsDataURL(file);
     }
@@ -70,8 +72,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     setIsDragging(true);
   };
 
-  const handleDragLeave = (e) => {
-    e.preventDefault();
+  const handleDragLeave = () => {
     setIsDragging(false);
   };
 
@@ -79,40 +80,72 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
-    handleImageUpload(file);
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImageSrc(e.target.result);
+        setSelectedColor(null);
+        setMessage('Image uploaded successfully! Click on the image to select a color.');
+      };
+      reader.readAsDataURL(file);
+    } else {
+      setMessage('Please drop an image file.');
+    }
   };
 
-  const handleCanvasClick = (e) => {
-    if (!imageRef.current || !canvasRef.current) return;
+  const handleImageClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!imageSrc) return;
+
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
     const rect = canvas.getBoundingClientRect();
+    
+    // Calculate the scale factors
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-    const x = Math.floor((e.clientX - rect.left) * scaleX);
-    const y = Math.floor((e.clientY - rect.top) * scaleY);
-    const pixel = ctx.getImageData(x, y, 1, 1).data;
-    const hex = rgbToHex(pixel[0], pixel[1], pixel[2]);
-    setSelectedColor({ hex });
-    setMessage(`You selected color: ${hex}`);
+    
+    // Get the click coordinates relative to the canvas
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+    
+    // Get the pixel data at the clicked position
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.getImageData(Math.floor(x), Math.floor(y), 1, 1).data;
+    
+    // Convert to hex
+    const hex = rgbToHex(imageData[0], imageData[1], imageData[2]);
+    setSelectedColor(hex);
+    setMessage(`Selected color: ${hex}`);
   };
 
   const rgbToHex = (r, g, b) => {
-    const toHex = (c) => {
-      const hex = c.toString(16);
+    return '#' + [r, g, b].map(x => {
+      const hex = x.toString(16);
       return hex.length === 1 ? '0' + hex : hex;
-    };
-    return '#' + toHex(r) + toHex(g) + toHex(b);
+    }).join('');
   };
 
   useEffect(() => {
-    if (imageSrc && canvasRef.current && imageRef.current) {
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
-      const img = imageRef.current;
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      ctx.drawImage(img, 0, 0);
+    if (imageSrc && canvasRef.current) {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas dimensions to match image
+        canvas.width = img.width;
+        canvas.height = img.height;
+        
+        // Draw image at full resolution
+        ctx.drawImage(img, 0, 0);
+        
+        // Store the scale factor for later use
+        canvas.dataset.scaleX = canvas.width / canvas.offsetWidth;
+        canvas.dataset.scaleY = canvas.height / canvas.offsetHeight;
+      };
+      img.src = imageSrc;
     }
   }, [imageSrc]);
 
@@ -124,24 +157,24 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     <div className="min-h-screen flex flex-col">
       <Header />
       {!mode && (
-        <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-8 lg:p-12 bg-background min-h-[80vh]">
-          <div className="bg-card rounded-lg border p-6 sm:p-10 max-w-xl w-full text-center shadow-sm">
-            <h1 className="text-4xl sm:text-5xl font-bold mb-6 text-foreground tracking-tight">
+        <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12 bg-background min-h-[80vh]">
+          <div className="responsive-card text-center">
+            <h1 className="responsive-heading font-bold mb-4 sm:mb-6 text-foreground tracking-tight">
               🎨 Event Color Match
             </h1>
-            <p className="text-muted-foreground text-base sm:text-lg mb-8">
+            <p className="responsive-text text-muted-foreground mb-6 sm:mb-8">
               Find the perfect color theme for your next event!
             </p>
-            <div className="flex justify-center gap-4 sm:gap-6 mb-8 flex-wrap">
+            <div className="responsive-flex">
               <button
                 onClick={() => setMode('upload')}
-                className="bg-primary text-primary-foreground px-6 py-3 rounded-md font-medium hover:bg-primary/90 transition-colors focus-ring transform hover:scale-105"
+                className="responsive-button bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 📤 Upload an Image
               </button>
               <button
                 onClick={() => setMode('inspire')}
-                className="bg-secondary text-secondary-foreground px-6 py-3 rounded-md font-medium hover:bg-secondary/90 transition-colors focus-ring transform hover:scale-105"
+                className="responsive-button bg-secondary text-secondary-foreground hover:bg-secondary/90"
               >
                 ✨ Inspire Me
               </button>
@@ -151,204 +184,168 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
       )}
 
       {mode === 'upload' && (
-        <div className="flex-1 flex items-center justify-center p-6 sm:p-8 lg:p-10 bg-background min-h-[80vh]">
-          <div className={`bg-card p-8 sm:p-10 rounded-lg border w-full text-center shadow-sm ${selectedColor ? 'max-w-6xl' : 'max-w-2xl'}`}>
-            <h1 className="text-3xl sm:text-4xl font-semibold text-foreground mb-6">Upload Your Image</h1>
-            <p className="text-base sm:text-lg text-muted-foreground mb-8">
-              Upload an image or drag and drop it here to extract colors
-            </p>
-
-            {!imageSrc ? (
-              <div
-                ref={dropZoneRef}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                className={`border-2 border-dashed rounded-lg p-12 transition-all duration-300 ${
-                  isDragging ? 'border-primary bg-primary/5 scale-105' : 'border-input'
-                }`}
-              >
-                <div className="flex flex-col items-center justify-center space-y-6">
-                  <span className="text-6xl animate-bounce">📸</span>
-                  <p className="text-lg text-muted-foreground">
-                    Drag and drop your image here, or{' '}
-                    <label htmlFor="image-upload" className="text-primary cursor-pointer hover:underline">
-                      browse
-                    </label>
-                  </p>
-                  <input
-                    id="image-upload"
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handleImageUpload(e.target.files[0])}
-                    className="hidden"
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    Supports JPG, PNG, GIF up to 10MB
+        <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12 bg-background min-h-[80vh]">
+          <div className="responsive-card">
+            <h2 className="responsive-heading font-bold mb-4 sm:mb-6 text-foreground">
+              Upload Your Image
+            </h2>
+            <div
+              className={`border-2 border-dashed rounded-lg p-6 sm:p-8 text-center ${
+                isDragging ? 'border-primary bg-primary/5' : 'border-input'
+              }`}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImageUpload}
+                accept="image/*"
+                className="hidden"
+              />
+              {!imageSrc ? (
+                <div 
+                  className="space-y-4 cursor-pointer"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <div className="text-4xl sm:text-5xl mb-4">📸</div>
+                  <p className="text-muted-foreground">
+                    Drag and drop an image here, or click to select
                   </p>
                 </div>
-              </div>
-            ) : (
-              <div className="flex flex-col lg:flex-row items-start justify-center space-x-0 lg:space-x-8 space-y-8 lg:space-y-0">
-                <div className="w-full lg:w-3/4">
-                  <div className="relative group">
-                    <canvas
-                      ref={canvasRef}
-                      onClick={handleCanvasClick}
-                      className="w-full h-auto max-h-[600px] object-contain rounded-lg border border-input cursor-crosshair transition-transform duration-300 group-hover:scale-[1.02]"
-                    />
-                    <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-sm px-4 py-2 rounded-md transform transition-all duration-300 group-hover:translate-y-[-4px]">
-                      <p className="text-sm text-muted-foreground">Click anywhere to pick a color</p>
-                    </div>
+              ) : (
+                <div className="relative">
+                  <div className="relative w-full">
                     <img
-                      ref={imageRef}
                       src={imageSrc}
                       alt="Uploaded"
-                      className="hidden"
-                      onLoad={() => {
-                        if (canvasRef.current && imageRef.current) {
-                          const canvas = canvasRef.current;
-                          const ctx = canvas.getContext('2d');
-                          const img = imageRef.current;
-                          canvas.width = img.naturalWidth;
-                          canvas.height = img.naturalHeight;
-                          ctx.drawImage(img, 0, 0);
-                        }
-                      }}
+                      className="max-w-full h-auto rounded-lg"
+                      style={{ display: 'none' }}
+                      ref={imageRef}
                     />
+                    <canvas
+                      ref={canvasRef}
+                      onClick={handleImageClick}
+                      className="max-w-full h-auto rounded-lg cursor-crosshair"
+                      style={{ touchAction: 'none' }}
+                    />
+                    <div className="absolute bottom-4 left-4 bg-background/80 backdrop-blur-sm px-3 py-1 rounded-md text-sm text-muted-foreground">
+                      Click anywhere to pick a color
+                    </div>
                   </div>
-                </div>
-                <div className="w-full lg:w-1/4 space-y-6">
                   {selectedColor && (
-                    <div className="bg-background p-6 rounded-lg border transform transition-all duration-300 hover:shadow-lg">
-                      <h3 className="text-lg font-medium text-foreground mb-4">Selected Color</h3>
-                      <div className="flex items-center space-x-4">
+                    <div className="mt-4 p-4 rounded-lg bg-background/50">
+                      <div className="flex items-center justify-center gap-4">
                         <div
-                          className="w-20 h-20 rounded-lg border border-input transform transition-transform duration-300 hover:scale-110"
-                          style={{ backgroundColor: selectedColor.hex }}
+                          className="w-12 h-12 rounded-full border-2 border-input"
+                          style={{ backgroundColor: selectedColor }}
                         />
-                        <div className="text-left">
-                          <p className="text-foreground font-medium">{selectedColor.hex}</p>
-                          <p className="text-sm text-muted-foreground">Click the image to change</p>
-                        </div>
+                        <span className="font-mono text-lg">{selectedColor}</span>
                       </div>
                     </div>
                   )}
-                  <div className="flex flex-col space-y-4">
-                    <button
-                      onClick={() => {
-                        setImageSrc(null);
-                        setSelectedColor(null);
-                      }}
-                      className="w-full bg-secondary text-secondary-foreground px-4 py-2 rounded-md font-medium hover:bg-secondary/90 transition-all duration-300 transform hover:scale-105 focus-ring"
-                    >
-                      Upload New Image
-                    </button>
-                    {selectedColor && (
-                      <button
-                        onClick={onNext}
-                        className="w-full bg-primary text-primary-foreground px-4 py-2 rounded-md font-medium hover:bg-primary/90 transition-all duration-300 transform hover:scale-105 focus-ring"
-                      >
-                        Continue with Selected Color
-                      </button>
-                    )}
-                  </div>
                 </div>
-              </div>
+              )}
+            </div>
+            {message && (
+              <p className="mt-4 text-center text-muted-foreground">{message}</p>
             )}
+            <div className="mt-6 sm:mt-8 flex justify-center gap-4">
+              <button
+                onClick={() => {
+                  setMode(null);
+                  setImageSrc(null);
+                  setSelectedColor(null);
+                }}
+                className="responsive-button border-2 border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground"
+              >
+                Back
+              </button>
+              <button
+                onClick={onNext}
+                disabled={!selectedColor}
+                className="responsive-button bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {mode === 'inspire' && (
-        <div className="flex-1 flex items-center justify-center p-6 sm:p-8 lg:p-10 bg-background min-h-[80vh]">
-          <div className="bg-card p-8 sm:p-10 rounded-lg border w-full max-w-6xl text-center shadow-sm">
-            <h1 className="text-3xl sm:text-4xl font-semibold text-foreground mb-6">Get Inspired</h1>
-            <p className="text-base sm:text-lg text-muted-foreground mb-8">
-              Choose from our curated collection of beautiful colors
-            </p>
-
-            {/* Category Filter */}
-            <div className="flex justify-center gap-4 mb-8 flex-wrap">
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setActiveCategory(category)}
-                  className={`px-4 py-2 rounded-full transition-all duration-300 transform hover:scale-105 ${
-                    activeCategory === category
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-secondary text-secondary-foreground'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
+        <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12 bg-background min-h-[80vh]">
+          <div className="responsive-card">
+            <h2 className="responsive-heading font-bold mb-4 sm:mb-6 text-foreground">
+              Get Inspired
+            </h2>
+            <div className="mb-6 sm:mb-8">
+              <div className="flex flex-wrap gap-2 justify-center">
+                {['All', 'Warm', 'Cool', 'Neutral'].map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => setActiveCategory(category)}
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                      activeCategory === category
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                    }`}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
             </div>
-
-            {/* Color Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            <div className="responsive-grid">
               {filteredColors.map((color) => (
                 <div
                   key={color.hex}
-                  className="group relative"
+                  className="relative group"
                   onMouseEnter={() => setHoveredColor(color)}
                   onMouseLeave={() => setHoveredColor(null)}
                 >
                   <button
                     onClick={() => {
-                      setSelectedColor(color);
-                      setHoveredColor(null);
+                      setSelectedColor(color.hex);
+                      setMessage(`Selected color: ${color.hex}`);
                     }}
-                    className={`w-full aspect-square rounded-lg border-2 transition-all duration-300 transform hover:scale-105 ${
-                      selectedColor?.hex === color.hex
-                        ? 'border-primary scale-105 ring-2 ring-primary ring-offset-2'
-                        : 'border-input hover:border-primary/50'
-                    }`}
+                    className="w-full aspect-square rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:scale-105"
                     style={{ backgroundColor: color.hex }}
                   />
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className={`bg-background/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium transition-opacity duration-300 ${
-                      hoveredColor?.hex === color.hex ? 'opacity-100' : 'opacity-0'
-                    }`}>
+                  {hoveredColor === color && (
+                    <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center text-white font-medium text-sm sm:text-base">
                       {color.name}
                     </div>
-                  </div>
+                  )}
                 </div>
               ))}
             </div>
-
-            {/* Color Preview */}
-            {hoveredColor && (
-              <div className="mt-8 p-6 bg-background rounded-lg border transform transition-all duration-300 animate-fade-in">
-                <h3 className="text-xl font-medium text-foreground mb-4">
-                  {hoveredColor.name} Preview
-                </h3>
-                <div className="flex flex-wrap gap-4 justify-center">
-                  <div className="p-4 rounded-lg shadow-md" style={{ backgroundColor: hoveredColor.hex }}>
-                    <span className="text-white font-mono text-sm">
-                      {hoveredColor.hex}
-                    </span>
-                  </div>
+            {selectedColor && (
+              <div className="mt-6 sm:mt-8 p-4 rounded-lg bg-background/50">
+                <div className="flex items-center justify-center gap-4">
+                  <div
+                    className="w-12 h-12 rounded-full border-2 border-input"
+                    style={{ backgroundColor: selectedColor }}
+                  />
+                  <span className="font-mono text-lg">{selectedColor}</span>
                 </div>
               </div>
             )}
-
-            {/* Action Buttons */}
-            <div className="mt-8 flex justify-center gap-4">
+            <div className="mt-6 sm:mt-8 flex justify-center gap-4">
               <button
                 onClick={() => setMode(null)}
-                className="bg-secondary text-secondary-foreground px-6 py-3 rounded-md font-medium hover:bg-secondary/90 transition-all duration-300 transform hover:scale-105 focus-ring"
+                className="responsive-button border-2 border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground"
               >
                 Back
               </button>
-              {selectedColor && (
-                <button
-                  onClick={onNext}
-                  className="bg-primary text-primary-foreground px-6 py-3 rounded-md font-medium hover:bg-primary/90 transition-all duration-300 transform hover:scale-105 focus-ring"
-                >
-                  Continue with Selected Color
-                </button>
-              )}
+              <button
+                onClick={onNext}
+                disabled={!selectedColor}
+                className="responsive-button bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
             </div>
           </div>
         </div>
