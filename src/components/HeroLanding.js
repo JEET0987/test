@@ -39,7 +39,7 @@ const HeroLanding = () => {
       <Header />
       <main className="flex-grow">
         {/* Hero Section */}
-        <section className="min-h-[80vh] bg-gradient-to-br from-purple-50 to-purple-100 py-8 sm:py-12 md:py-16 lg:py-20 pt-72 sm:pt-80 md:pt-[24rem] lg:pt-[28rem]">
+        <section className="min-h-[80vh] bg-gradient-to-br from-purple-50 to-purple-100 py-8 sm:py-12 md:py-16 lg:py-20 pt-56 sm:pt-64 md:pt-[16rem] lg:pt-[20rem]">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-8 sm:mb-12 md:mb-16">
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-party-purple mb-4 sm:mb-6">
