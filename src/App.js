@@ -123,7 +123,10 @@ function App() {
 
   const appState = {
     selectedColor,
-    setSelectedColor,
+    setSelectedColor: (color) => {
+      console.log('Setting color:', color); // Add logging to debug color selection
+      setSelectedColor(color);
+    },
     userType,
     setUserType,
     eventDescription,

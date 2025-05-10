@@ -39,8 +39,8 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
   const [imageSrc, setImageSrc] = useState(null);
   const [message, setMessage] = useState('');
   const [isDragging, setIsDragging] = useState(false);
-  const [hoveredColor, setHoveredColor] = useState(null);
   const [activeCategory, setActiveCategory] = useState('All');
+  const [localSelectedColor, setLocalSelectedColor] = useState(null);
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
   const dropZoneRef = useRef(null);
@@ -49,9 +49,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
   const categories = ['All', 'Warm', 'Cool', 'Neutral'];
 
   useEffect(() => {
-    if (selectedColor) {
-      setMessage(`You selected color: ${selectedColor.hex || selectedColor}`);
-    }
+    setLocalSelectedColor(selectedColor);
   }, [selectedColor]);
 
   const handleImageUpload = (event) => {
@@ -153,6 +151,13 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     ? inspirationColors 
     : inspirationColors.filter(color => color.category === activeCategory);
 
+  const handleColorSelect = (color) => {
+    console.log('Selecting color:', color);
+    setLocalSelectedColor(color);
+    setSelectedColor(color);
+    setMessage(`Selected color: ${color}`);
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -234,14 +239,14 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
                       Click anywhere to pick a color
                     </div>
                   </div>
-                  {selectedColor && (
+                  {localSelectedColor && (
                     <div className="mt-4 p-4 rounded-lg bg-background/50">
                       <div className="flex items-center justify-center gap-4">
                         <div
                           className="w-12 h-12 rounded-full border-2 border-input"
-                          style={{ backgroundColor: selectedColor }}
+                          style={{ backgroundColor: localSelectedColor }}
                         />
-                        <span className="font-mono text-lg">{selectedColor}</span>
+                        <span className="font-mono text-lg">{localSelectedColor}</span>
                       </div>
                     </div>
                   )}
@@ -264,7 +269,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
               </button>
               <button
                 onClick={onNext}
-                disabled={!selectedColor}
+                disabled={!localSelectedColor}
                 className="responsive-button bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Next
@@ -302,33 +307,27 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
                 <div
                   key={color.hex}
                   className="relative group"
-                  onMouseEnter={() => setHoveredColor(color)}
-                  onMouseLeave={() => setHoveredColor(null)}
                 >
                   <button
-                    onClick={() => {
-                      setSelectedColor(color.hex);
-                      setMessage(`Selected color: ${color.hex}`);
-                    }}
+                    onClick={() => handleColorSelect(color.hex)}
                     className="w-full aspect-square rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:scale-105"
-                    style={{ backgroundColor: color.hex }}
+                    style={{ 
+                      backgroundColor: color.hex,
+                      border: localSelectedColor === color.hex ? '4px solid #9B59B6' : 'none',
+                      boxShadow: localSelectedColor === color.hex ? '0 0 0 2px white, 0 0 0 4px #9B59B6' : 'none'
+                    }}
                   />
-                  {hoveredColor === color && (
-                    <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center text-white font-medium text-sm sm:text-base">
-                      {color.name}
-                    </div>
-                  )}
                 </div>
               ))}
             </div>
-            {selectedColor && (
+            {localSelectedColor && (
               <div className="mt-6 sm:mt-8 p-4 rounded-lg bg-background/50">
                 <div className="flex items-center justify-center gap-4">
                   <div
                     className="w-12 h-12 rounded-full border-2 border-input"
-                    style={{ backgroundColor: selectedColor }}
+                    style={{ backgroundColor: localSelectedColor }}
                   />
-                  <span className="font-mono text-lg">{selectedColor}</span>
+                  <span className="font-mono text-lg">{localSelectedColor}</span>
                 </div>
               </div>
             )}
@@ -341,7 +340,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
               </button>
               <button
                 onClick={onNext}
-                disabled={!selectedColor}
+                disabled={!localSelectedColor}
                 className="responsive-button bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Next
