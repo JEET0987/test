@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import Footer from './Footer';
+import Header from './Header';
 
 const CheckoutPage = ({ onBack }) => {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ const CheckoutPage = ({ onBack }) => {
   if (success) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
+        <Header />
         <div className="flex-1">
           <div className="max-w-2xl mx-auto p-8 text-center">
             <div className="bg-card rounded-lg shadow-sm p-8 border">
@@ -61,6 +63,7 @@ const CheckoutPage = ({ onBack }) => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <Header />
       <div className="flex-1">
         <div className="max-w-2xl mx-auto p-8">
           <div className="bg-card rounded-lg shadow-sm p-8 border">
@@ -139,4 +142,9 @@ const CheckoutPage = ({ onBack }) => {
   );
 };
 
-export default CheckoutPage;
+const CheckoutWrapper = () => {
+  const navigate = useNavigate();
+  return <CheckoutPage onBack={() => navigate('/confirmation')} />;
+};
+
+export default CheckoutWrapper;

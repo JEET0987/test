@@ -90,7 +90,7 @@ const HeroLanding = () => {
               ].map((item) => (
                 <div key={item.step} className="relative">
                   <div className="p-6 rounded-xl bg-white shadow-lg hover:shadow-xl transition-shadow duration-300">
-                    <div className="w-12 h-12 rounded-full bg-party-purple text-white flex items-center justify-center text-xl font-bold mb-4">
+                    <div className="w-12 h-12 rounded-full bg-party-purple text-black flex items-center justify-center text-xl font-bold mb-4">
                       {item.step}
                     </div>
                     <h3 className="text-lg sm:text-xl font-bold text-party-purple mb-2">{item.title}</h3>
