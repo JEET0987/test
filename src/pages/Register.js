@@ -138,7 +138,7 @@ const Register = () => {
                   Creating account...
                 </span>
               ) : (
-                'Create account'
+                <span className="text-purple-700">Create account</span>
               )}
             </button>
           </form>
