@@ -8,11 +8,19 @@ import Step4ProductDisplay from './components/Step4ProductDisplay';
 import CheckoutPage from './components/CheckoutPage';
 import ConfirmationPage from './components/ConfirmationPage';
 import ThankYouPage from './components/ThankYouPage';
+import LoginPage from './components/LoginPage';
+import RegisterPage from './components/RegisterPage';
 import { CartProvider } from './context/CartContext';
 import HeroLanding from './components/HeroLanding';
+import { AuthProvider } from './contexts/AuthContext';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
+
+import Header from './components/Header';
+import Footer from './components/Footer';
 
 const stripePromise = loadStripe('pk_test_12345ReplaceWithYourOwnKey');
 
@@ -138,26 +146,48 @@ function App() {
   };
 
   return (
-    <Router>
-      <AppStateContext.Provider value={appState}>
-        <CartProvider>
-          <Elements stripe={stripePromise}>
-            <Routes>
-              <Route path="/" element={<HeroLanding />} />
-              <Route path="/step1" element={<Step1Wrapper />} />
-              <Route path="/step2" element={<Step2Wrapper />} />
-              <Route path="/step3" element={<Step3Wrapper />} />
-              <Route path="/step4" element={<Step4Wrapper />} />
-              <Route path="/step5" element={<Step5Wrapper />} />
-              <Route path="/confirmation" element={<ConfirmationPage />} />
-              <Route path="/checkout" element={<CheckoutWrapper />} />
-              <Route path="/thank-you" element={<ThankYouPage />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </Elements>
-        </CartProvider>
-      </AppStateContext.Provider>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <div className="min-h-screen flex flex-col">
+          <Header />
+          <main className="flex-grow">
+            <AppStateContext.Provider value={appState}>
+              <CartProvider>
+                <Elements stripe={stripePromise}>
+                  <Routes>
+                    <Route path="/" element={<HeroLanding />} />
+                    <Route path="/step1" element={<Step1Wrapper />} />
+                    <Route path="/step2" element={<Step2Wrapper />} />
+                    <Route path="/step3" element={<Step3Wrapper />} />
+                    <Route path="/step4" element={<Step4Wrapper />} />
+                    <Route path="/step5" element={<Step5Wrapper />} />
+                    <Route path="/confirmation" element={<ConfirmationPage />} />
+                    <Route path="/checkout" element={<CheckoutWrapper />} />
+                    <Route path="/thank-you" element={<ThankYouPage />} />
+                    <Route path="/register" element={<RegisterPage />} />
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                  </Routes>
+                </Elements>
+              </CartProvider>
+            </AppStateContext.Provider>
+          </main>
+          <Footer />
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
 

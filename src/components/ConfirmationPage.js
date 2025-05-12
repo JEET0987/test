@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
 import Header from './Header';
-import Footer from './Footer';
 
 const ConfirmationPage = () => {
   const navigate = useNavigate();
@@ -19,11 +18,16 @@ const ConfirmationPage = () => {
   const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold text-foreground mb-8">Order Confirmation</h1>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50">
+      
+      <div className="flex-1 flex items-center justify-center p-6 sm:p-8 lg:p-10 min-h-[80vh]">
+        <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-10 max-w-2xl w-full text-center border border-purple-100">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-party-purple mb-6 drop-shadow-[0_2px_8px_rgba(80,0,80,0.15)]">
+            Confirm Your Order
+          </h2>
+          <p className="text-lg sm:text-xl text-purple-800 mb-8">
+            Please review your order details before proceeding to payment.
+          </p>
           
           {/* Order Summary */}
           <div className="bg-card rounded-lg shadow-md p-6 mb-8">
@@ -140,23 +144,22 @@ const ConfirmationPage = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-between items-center">
+          <div className="mt-8 flex justify-center gap-4">
             <button
               onClick={handleBackToCart}
-              className="px-6 py-2 border border-primary text-primary rounded-md hover:bg-primary/10 transition-colors"
+              className="bg-white/80 text-party-purple px-8 py-4 rounded-full font-bold border border-purple-200 hover:bg-purple-50 hover:text-purple-700 shadow transition-all duration-300"
             >
-              Back to Cart
+              Back
             </button>
             <button
               onClick={handleConfirmOrder}
-              className="px-6 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+              className="bg-gradient-to-r from-party-purple to-pink-400 text-party-purple px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300 border-2 border-white/40"
             >
-              Confirm Order
+              Confirm & Pay
             </button>
           </div>
         </div>
-      </main>
-      <Footer />
+      </div>
     </div>
   );
 };

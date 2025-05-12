@@ -1,9 +1,9 @@
 import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Header from './Header';
-import Footer from './Footer';
+// import Header from './Header';
 
 const productsByTheme = {
   Circus: [
@@ -202,10 +202,11 @@ const productsByTheme = {
   ],
 };
 
-const Step4ProductDisplay = ({ selectedTheme = 'Default' }) => {
+const Step4ProductDisplay = ({ selectedTheme = 'Default', onNext }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('price');
   const { addToCart } = useContext(CartContext);
+  const navigate = useNavigate();
 
   const products = productsByTheme[selectedTheme] || productsByTheme['Default'];
 
@@ -239,90 +240,96 @@ const Step4ProductDisplay = ({ selectedTheme = 'Default' }) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <div className="flex-1">
-        <div className="bg-white py-12">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
-                Products for "{selectedTheme}"
-              </h2>
-              <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-                Discover our curated collection of decorations and accessories
-              </p>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50">
+      {/* <Header /> */}
+      <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-8 lg:p-10 min-h-[80vh]">
+        <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-10 max-w-5xl w-full text-center border border-purple-100">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-party-purple mb-6 drop-shadow-[0_2px_8px_rgba(80,0,80,0.15)]">
+            Product Display
+          </h2>
+          <div className="mb-12 flex flex-col sm:flex-row justify-center gap-4 max-w-3xl mx-auto">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                placeholder="Search by product name..."
+                className="w-full p-4 rounded-lg border-2 border-gray-200 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
-            
-            <div className="mb-12 flex flex-col sm:flex-row justify-center gap-4 max-w-3xl mx-auto">
-              <div className="relative flex-1">
-                <input
-                  type="text"
-                  placeholder="Search by product name..."
-                  className="w-full p-4 rounded-lg border-2 border-gray-200 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <div className="flex items-center gap-3">
-                <label htmlFor="sort" className="text-gray-700 font-medium">
-                  Sort by:
-                </label>
-                <select
-                  id="sort"
-                  className="p-4 rounded-lg border-2 border-gray-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                >
-                  <option value="price">Price: Low to High</option>
-                  <option value="popularity">Popularity</option>
-                </select>
-              </div>
+            <div className="flex items-center gap-3">
+              <label htmlFor="sort" className="text-gray-700 font-medium">
+                Sort by:
+              </label>
+              <select
+                id="sort"
+                className="p-4 rounded-lg border-2 border-gray-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <option value="price">Price: Low to High</option>
+                <option value="popularity">Popularity</option>
+              </select>
             </div>
+          </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-              {filteredProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="group bg-white rounded-lg border-2 border-gray-200 shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300"
-                >
-                  <div className="relative aspect-[4/3] overflow-hidden">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">{product.name}</h3>
-                    <p className="text-2xl font-bold text-black mb-4">₹{product.price}</p>
-                    <div className="flex items-center gap-4 mb-4">
-                      <label htmlFor={`quantity-${product.id}`} className="text-gray-700 font-medium">
-                        Quantity:
-                      </label>
-                      <input
-                        type="number"
-                        id={`quantity-${product.id}`}
-                        min="0"
-                        value={quantities[product.id] || 0}
-                        onChange={(e) => handleQuantityChange(product.id, e.target.value)}
-                        className="w-20 p-2 rounded-lg border-2 border-gray-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                      />
-                    </div>
-                    <button 
-                      onClick={() => handleAddToCart(product)}
-                      className="w-full bg-black text-white py-3 rounded-lg text-lg font-semibold hover:bg-gray-800 transform hover:-translate-y-0.5 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-                    >
-                      Add to Cart
-                    </button>
-                  </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {filteredProducts.map((product) => (
+              <div
+                key={product.id}
+                className="group bg-white/70 backdrop-blur-lg rounded-2xl border-2 border-purple-100 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
+              >
+                <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-2xl" />
                 </div>
-              ))}
-            </div>
+                <div className="p-6 flex-1 flex flex-col justify-between">
+                  <h3 className="text-xl font-bold text-party-purple mb-2 drop-shadow-[0_2px_8px_rgba(80,0,80,0.10)]">{product.name}</h3>
+                  <p className="text-2xl font-bold text-purple-700 mb-4 drop-shadow-[0_2px_8px_rgba(80,0,80,0.10)]">₹{product.price}</p>
+                  <div className="flex items-center gap-4 mb-4">
+                    <label htmlFor={`quantity-${product.id}`} className="text-gray-700 font-medium">
+                      Quantity:
+                    </label>
+                    <input
+                      type="number"
+                      id={`quantity-${product.id}`}
+                      min="0"
+                      value={quantities[product.id] || 0}
+                      onChange={(e) => handleQuantityChange(product.id, e.target.value)}
+                      className="w-20 p-2 rounded-lg border-2 border-purple-200 bg-white/80 text-purple-900 focus:outline-none focus:ring-2 focus:ring-party-purple focus:border-transparent transition-all"
+                    />
+                  </div>
+                  <button
+                    onClick={() => handleAddToCart(product)}
+                    className="w-full bg-gradient-to-r from-party-purple to-pink-400 text-party-purple py-3 rounded-full text-lg font-bold shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300 border-2 border-white/40 focus:outline-none focus:ring-2 focus:ring-party-purple focus:ring-offset-2"
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-8 flex justify-center gap-4">
+            <button
+              onClick={() => navigate('/step3')}
+              className="bg-white/80 text-party-purple px-8 py-4 rounded-full font-bold border border-purple-200 hover:bg-purple-50 hover:text-purple-700 shadow transition-all duration-300"
+            >
+              Back
+            </button>
+            <button
+              onClick={onNext}
+              className="bg-gradient-to-r from-party-purple to-pink-400 text-party-purple px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300 border-2 border-white/40"
+            >
+              Next
+            </button>
           </div>
         </div>
       </div>
-      <Footer />
+      
       <ToastContainer
         position="bottom-right"
         autoClose={3000}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from './Header';
+// import Header from './Header';
 import Footer from './Footer';
 
 const ThankYouPage = () => {
@@ -11,51 +11,23 @@ const ThankYouPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header />
-      
-      <div className="flex-1 flex items-center justify-center p-4">
-        <div className="bg-card rounded-lg shadow-sm p-8 md:p-12 text-center max-w-2xl border">
-          <div className="mb-6">
-            <span className="text-6xl">🎉</span>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            Thank You for Your Order!
-          </h1>
-          <p className="text-lg text-muted-foreground mb-8">
-            Your order has been successfully placed. We'll send you an email confirmation with all the details.
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50">
+      {/* <Header /> */}
+      <div className="flex-1 flex items-center justify-center p-6 sm:p-8 lg:p-10 min-h-[80vh]">
+        <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-10 max-w-2xl w-full text-center border border-purple-100">
+          <h2 className="text-3xl font-extrabold text-party-purple mb-4 drop-shadow-[0_2px_8px_rgba(80,0,80,0.15)]">Thank You!</h2>
+          <p className="text-lg text-purple-800 mb-6">
+            Your order has been placed successfully. We'll send you an email confirmation shortly.
           </p>
-          
-          <div className="space-y-4">
-            <div className="bg-accent/50 rounded-lg p-4">
-              <h2 className="font-semibold text-foreground mb-2">What's Next?</h2>
-              <ul className="text-muted-foreground space-y-2 text-left">
-                <li className="flex items-center">
-                  <span className="mr-2">📧</span>
-                  Check your email for order confirmation
-                </li>
-                <li className="flex items-center">
-                  <span className="mr-2">📦</span>
-                  We'll notify you when your order ships
-                </li>
-                <li className="flex items-center">
-                  <span className="mr-2">💬</span>
-                  Need help? Contact our support team
-                </li>
-              </ul>
-            </div>
-
-            <button
-              onClick={handleReturnHome}
-              className="bg-primary text-primary-foreground px-6 py-3 rounded-md font-medium hover:bg-primary/90 transition-colors focus-ring"
-            >
-              Return to Home
-            </button>
-          </div>
+          <button
+            onClick={() => navigate('/', { replace: true })}
+            className="bg-gradient-to-r from-party-purple to-pink-400 text-party-purple px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300 border-2 border-white/40"
+          >
+            Return to Home
+          </button>
         </div>
       </div>
-
-      <Footer />
+      
     </div>
   );
 };

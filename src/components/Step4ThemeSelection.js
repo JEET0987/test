@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Header from './Header';
-import Footer from './Footer';
+// import Header from './Header';
+// import Footer from './Footer';
 
 const Step4ThemeSelection = ({ themeSuggestions, selectedTheme, setSelectedTheme, onNext }) => {
   const [localSelectedTheme, setLocalSelectedTheme] = useState(selectedTheme || '');
@@ -14,43 +14,35 @@ const Step4ThemeSelection = ({ themeSuggestions, selectedTheme, setSelectedTheme
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-8 lg:p-10 bg-background min-h-[80vh]">
-        <div className="bg-card p-8 sm:p-10 rounded-lg border max-w-lg w-full text-center shadow-sm">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold text-foreground mb-6">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50">
+      {/* <Header /> */}
+      <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-8 lg:p-10 min-h-[80vh]">
+        <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-10 max-w-lg w-full text-center border border-purple-100">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-party-purple mb-6 drop-shadow-[0_2px_8px_rgba(80,0,80,0.15)]">
             Select a Theme
           </h2>
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="flex flex-col space-y-4">
-              {themeSuggestions.map((theme) => (
-                <label
-                  key={theme}
-                  className="inline-flex items-center space-x-3 cursor-pointer p-3 rounded-md hover:bg-accent transition-colors"
-                >
-                  <input
-                    type="radio"
-                    name="theme"
-                    value={theme}
-                    checked={localSelectedTheme === theme}
-                    onChange={(e) => setLocalSelectedTheme(e.target.value)}
-                    className="h-4 w-4 border-input text-primary focus-ring"
-                    required
-                  />
-                  <span className="text-lg font-medium text-foreground">{theme}</span>
-                </label>
+            <select
+              value={localSelectedTheme}
+              onChange={(e) => setLocalSelectedTheme(e.target.value)}
+              className="w-full px-4 py-3 rounded-lg border border-purple-200 focus:ring-2 focus:ring-party-purple focus:outline-none text-lg text-purple-900 bg-white/90 shadow mb-4"
+              required
+            >
+              <option value="">Select a theme...</option>
+              {themeSuggestions && themeSuggestions.map((theme) => (
+                <option key={theme} value={theme}>{theme}</option>
               ))}
-            </div>
+            </select>
             <button
               type="submit"
-              className="mt-6 w-full bg-primary text-primary-foreground px-6 py-3 rounded-md text-lg font-medium hover:bg-primary/90 transition-colors focus-ring"
+              className="bg-gradient-to-r from-party-purple to-pink-400 text-party-purple px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300 border-2 border-white/40"
             >
               Next
             </button>
           </form>
         </div>
       </div>
-      <Footer />
+      
     </div>
   );
 };

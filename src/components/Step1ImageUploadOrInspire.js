@@ -159,27 +159,27 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50">
+      
       {!mode && (
-        <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12 bg-background min-h-[80vh]">
-          <div className="responsive-card text-center">
-            <h1 className="responsive-heading font-bold mb-4 sm:mb-6 text-foreground tracking-tight">
+        <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12 min-h-[80vh]">
+          <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-10 max-w-xl w-full text-center border border-purple-100">
+            <h1 className="text-3xl sm:text-4xl font-extrabold text-party-purple mb-4 sm:mb-6 drop-shadow-[0_2px_8px_rgba(80,0,80,0.15)]">
               🎨 Event Color Match
             </h1>
-            <p className="responsive-text text-muted-foreground mb-6 sm:mb-8">
+            <p className="text-lg sm:text-xl text-purple-800 mb-6 sm:mb-8">
               Find the perfect color theme for your next event!
             </p>
-            <div className="responsive-flex">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <button
                 onClick={() => setMode('upload')}
-                className="responsive-button bg-primary text-primary-foreground hover:bg-primary/90"
+                className="bg-gradient-to-r from-party-purple to-pink-400 text-party-purple px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300 border-2 border-white/40"
               >
                 📤 Upload an Image
               </button>
               <button
                 onClick={() => setMode('inspire')}
-                className="responsive-button bg-secondary text-secondary-foreground hover:bg-secondary/90"
+                className="bg-white/80 text-party-purple px-8 py-4 rounded-full font-bold text-lg border border-purple-200 hover:bg-purple-50 hover:text-purple-700 shadow transition-all duration-300"
               >
                 ✨ Inspire Me
               </button>
@@ -189,14 +189,14 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
       )}
 
       {mode === 'upload' && (
-        <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12 bg-background min-h-[80vh]">
-          <div className="responsive-card">
-            <h2 className="responsive-heading font-bold mb-4 sm:mb-6 text-foreground">
+        <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12 min-h-[80vh]">
+          <div className="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-10 max-w-xl w-full text-center border border-purple-100">
+            <h2 className="text-2xl sm:text-3xl font-bold text-party-purple mb-4 sm:mb-6 drop-shadow-[0_2px_8px_rgba(80,0,80,0.10)]">
               Upload Your Image
             </h2>
             <div
               className={`border-2 border-dashed rounded-lg p-6 sm:p-8 text-center ${
-                isDragging ? 'border-primary bg-primary/5' : 'border-input'
+                isDragging ? 'border-party-purple bg-party-purple/10' : 'border-input'
               }`}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
@@ -254,7 +254,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
               )}
             </div>
             {message && (
-              <p className="mt-4 text-center text-muted-foreground">{message}</p>
+              <p className="mt-4 text-center text-purple-700">{message}</p>
             )}
             <div className="mt-6 sm:mt-8 flex justify-center gap-4">
               <button
@@ -263,14 +263,14 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
                   setImageSrc(null);
                   setSelectedColor(null);
                 }}
-                className="responsive-button border-2 border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground"
+                className="bg-white/80 text-party-purple px-6 py-3 rounded-full font-bold border border-purple-200 hover:bg-purple-50 hover:text-purple-700 shadow transition-all duration-300"
               >
                 Back
               </button>
               <button
                 onClick={onNext}
                 disabled={!localSelectedColor}
-                className="responsive-button bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-gradient-to-r from-party-purple to-pink-400 text-party-purple px-6 py-3 rounded-full font-bold shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300 border-2 border-white/40 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Next
               </button>
@@ -280,9 +280,9 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
       )}
 
       {mode === 'inspire' && (
-        <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12 bg-background min-h-[80vh]">
-          <div className="responsive-card">
-            <h2 className="responsive-heading font-bold mb-4 sm:mb-6 text-foreground">
+        <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12 min-h-[80vh]">
+          <div className="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-10 max-w-xl w-full text-center border border-purple-100">
+            <h2 className="text-2xl sm:text-3xl font-bold text-party-purple mb-4 sm:mb-6 drop-shadow-[0_2px_8px_rgba(80,0,80,0.10)]">
               Get Inspired
             </h2>
             <div className="mb-6 sm:mb-8">
@@ -293,8 +293,8 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
                     onClick={() => setActiveCategory(category)}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                       activeCategory === category
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                        ? 'bg-gradient-to-r from-party-purple to-pink-400 text-party-purple'
+                        : 'bg-white/80 text-party-purple hover:bg-purple-50 hover:text-purple-700 border border-purple-200'
                     }`}
                   >
                     {category}
@@ -302,7 +302,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
                 ))}
               </div>
             </div>
-            <div className="responsive-grid">
+            <div className="grid grid-cols-4 gap-2 sm:gap-4 mb-6">
               {filteredColors.map((color) => (
                 <div
                   key={color.hex}
@@ -310,7 +310,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
                 >
                   <button
                     onClick={() => handleColorSelect(color.hex)}
-                    className="w-full aspect-square rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:scale-105"
+                    className="w-full aspect-square rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:scale-105 border-2 border-white"
                     style={{ 
                       backgroundColor: color.hex,
                       border: localSelectedColor === color.hex ? '4px solid #9B59B6' : 'none',
@@ -321,27 +321,25 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
               ))}
             </div>
             {localSelectedColor && (
-              <div className="mt-6 sm:mt-8 p-4 rounded-lg bg-background/50">
-                <div className="flex items-center justify-center gap-4">
-                  <div
-                    className="w-12 h-12 rounded-full border-2 border-input"
-                    style={{ backgroundColor: localSelectedColor }}
-                  />
-                  <span className="font-mono text-lg">{localSelectedColor}</span>
-                </div>
+              <div className="mt-6 sm:mt-8 p-4 rounded-lg bg-white/70 flex items-center justify-center gap-4">
+                <div
+                  className="w-12 h-12 rounded-full border-2 border-party-purple"
+                  style={{ backgroundColor: localSelectedColor }}
+                />
+                <span className="font-mono text-lg text-party-purple">{localSelectedColor}</span>
               </div>
             )}
             <div className="mt-6 sm:mt-8 flex justify-center gap-4">
               <button
                 onClick={() => setMode(null)}
-                className="responsive-button border-2 border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground"
+                className="bg-white/80 text-party-purple px-6 py-3 rounded-full font-bold border border-purple-200 hover:bg-purple-50 hover:text-purple-700 shadow transition-all duration-300"
               >
                 Back
               </button>
               <button
                 onClick={onNext}
                 disabled={!localSelectedColor}
-                className="responsive-button bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-gradient-to-r from-party-purple to-pink-400 text-party-purple px-6 py-3 rounded-full font-bold shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300 border-2 border-white/40 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Next
               </button>
@@ -349,7 +347,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
           </div>
         </div>
       )}
-      <Footer />
+      
     </div>
   );
 };
