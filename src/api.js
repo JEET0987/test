@@ -19,11 +19,11 @@ async function request(endpoint, method = 'GET', data) {
 }
 
 export async function login(email, password) {
-  return request('auth/login', 'POST', { email, password });
+  return request('/login', 'POST', { email, password });
 }
 
 export async function register(name, email, password, userType) {
-  return request('auth/register', 'POST', { name, email, password, userType });
+  return request('/register', 'POST', { name, email, password, userType });
 }
 
 export async function getProducts(params = {}) {

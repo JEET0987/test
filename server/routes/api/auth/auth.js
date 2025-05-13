@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-const { auth } = require('../middleware/auth');
+const User = require('../../../models/User');
+const { auth } = require('../../../middleware/auth');
 
 // Register new user
 router.post('/register', async (req, res) => {

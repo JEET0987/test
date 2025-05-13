@@ -17,6 +17,6 @@ async function post(endpoint, data) {
 }
 
 export const authService = {
-  login: (credentials) => post('/api/auth/login', credentials),
-  register: (userData) => post('/api/auth/register', userData),
+  login: (credentials) => post('/api/auth/auth/auth', credentials),
+  register: (userData) => post('/api/auth/auth/auth', userData),
 };
