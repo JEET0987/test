@@ -62,7 +62,11 @@ const Step3Wrapper = () => {
   
   const handleSubmit = (description) => {
     setEventDescription(description);
+<<<<<<< HEAD
     const desc = description.eventDetails?.toLowerCase() || '';
+=======
+    const desc = description.toLowerCase();
+>>>>>>> f865efd25f2a7b9fe2838dcf38909f468ac7dd82
     const suggestions = [];
     if (desc.includes('birthday')) {
       suggestions.push('Circus', 'Gaming', 'Space');
@@ -147,12 +151,21 @@ function App() {
 
   return (
     <AuthProvider>
+<<<<<<< HEAD
       <CartProvider>
         <Router>
           <div className="min-h-screen flex flex-col">
             <Header />
             <main className="flex-grow">
               <AppStateContext.Provider value={appState}>
+=======
+      <Router>
+        <div className="min-h-screen flex flex-col">
+          <Header />
+          <main className="flex-grow">
+            <AppStateContext.Provider value={appState}>
+              <CartProvider>
+>>>>>>> f865efd25f2a7b9fe2838dcf38909f468ac7dd82
                 <Elements stripe={stripePromise}>
                   <Routes>
                     <Route path="/" element={<HeroLanding />} />
@@ -169,6 +182,7 @@ function App() {
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
                 </Elements>
+<<<<<<< HEAD
               </AppStateContext.Provider>
             </main>
             <Footer />
@@ -187,6 +201,26 @@ function App() {
           </div>
         </Router>
       </CartProvider>
+=======
+              </CartProvider>
+            </AppStateContext.Provider>
+          </main>
+          <Footer />
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
+        </div>
+      </Router>
+>>>>>>> f865efd25f2a7b9fe2838dcf38909f468ac7dd82
     </AuthProvider>
   );
 }

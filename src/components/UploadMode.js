@@ -52,6 +52,7 @@ const UploadMode = ({ selectedColor, setSelectedColor, onNext }) => {
   }, [imageSrc]);
 
   return (
+<<<<<<< HEAD
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
       <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-8 lg:p-10 min-h-[80vh]">
         <div className="bg-gray-800/80 backdrop-blur-lg rounded-3xl shadow-2xl p-10 max-w-lg w-full text-center border border-purple-500/20">
@@ -132,6 +133,47 @@ const UploadMode = ({ selectedColor, setSelectedColor, onNext }) => {
           </div>
         </div>
       </div>
+=======
+    <div
+      className="space-y-4 flex flex-col items-center justify-center text-center min-h-[300px]"
+      style={{ backgroundColor: selectedColor ? (selectedColor.hex || selectedColor) : 'transparent' }}
+    >
+      <input type="file" accept="image/*" onChange={handleImageUpload} />
+      {imageSrc && (
+        <div className="mt-4">
+          <canvas
+            ref={canvasRef}
+            onClick={handleCanvasClick}
+            className="border border-gray-300 max-w-full h-auto cursor-crosshair"
+          />
+          <img
+            ref={imageRef}
+            src={imageSrc}
+            alt="Uploaded"
+            className="hidden"
+            onLoad={() => {
+              if (canvasRef.current && imageRef.current) {
+                const canvas = canvasRef.current;
+                const ctx = canvas.getContext('2d');
+                const img = imageRef.current;
+                canvas.width = img.naturalWidth;
+                canvas.height = img.naturalHeight;
+                ctx.drawImage(img, 0, 0);
+              }
+            }}
+          />
+        </div>
+      )}
+      {message && <p className="mt-2 text-lg font-semibold">{message}</p>}
+      {selectedColor && (
+        <button
+          onClick={onNext}
+          className="mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Next
+        </button>
+      )}
+>>>>>>> f865efd25f2a7b9fe2838dcf38909f468ac7dd82
     </div>
   );
 };
