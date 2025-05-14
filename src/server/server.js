@@ -28,7 +28,7 @@ mongoose.connect('mongodb+srv://anitabhavsar:vrhZZJILwJDgaUco@bcb.u01ogc5.mongod
 .catch((err) => console.error('MongoDB connection error:', err));
 
 // Routes
-app.use('/api/auth/auth', require('./routes/api/auth/auth'));
+app.use('/api/auth', require('./routes/api/auth/auth'));
 app.use('/api/auth/products', require('./routes/api/auth/products'));
 app.use('/api/auth/cart', require('./routes/api/auth/cart'));
 app.use('/api/auth/orders', require('./routes/api/auth/orders'));

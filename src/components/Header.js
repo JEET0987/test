@@ -1,10 +1,12 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const Header = () => {
   const navigate = useNavigate();
   const cartContext = useContext(CartContext);
+  const { user, logout } = useAuth();
   const cartItems = cartContext?.cartItems || [];
   const [isCartOpen, setIsCartOpen] = useState(false);
 
@@ -13,6 +15,11 @@ const Header = () => {
   const handleNavigation = (path) => {
     navigate(path);
     setIsCartOpen(false);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
   };
 
   return (
@@ -129,18 +136,34 @@ const Header = () => {
 
             {/* Auth Buttons */}
             <div className="flex items-center space-x-4">
-              <Link
-                to="/register"
-                className="text-gray-600 hover:text-purple-600 transition-colors duration-200 font-medium"
-              >
-                Register
-              </Link>
-              <Link
-                to="/login"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-200"
-              >
-                Sign in
-              </Link>
+              {user ? (
+                <div className="flex items-center space-x-4">
+                  <span className="text-purple-700 font-medium">
+                    Welcome, {user.name}
+                  </span>
+                  <button
+                    onClick={handleLogout}
+                    className="text-gray-600 hover:text-purple-600 transition-colors duration-200 font-medium"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <Link
+                    to="/register"
+                    className="text-gray-600 hover:text-purple-600 transition-colors duration-200 font-medium"
+                  >
+                    Register
+                  </Link>
+                  <Link
+                    to="/login"
+                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-200"
+                  >
+                    Sign in
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>
