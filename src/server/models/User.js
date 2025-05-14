@@ -15,12 +15,8 @@ const userSchema = new mongoose.Schema({
   },
   name: {
     type: String,
-    required: true
-  },
-  role: {
-    type: String,
-    enum: ['user', 'admin', 'retail', 'wholesale'],
-    default: 'user'
+    required: true,
+    trim: true
   },
   createdAt: {
     type: Date,
@@ -41,9 +37,15 @@ userSchema.pre('save', async function(next) {
   }
 });
 
-// Method to compare password
+// Method to compare passwords
 userSchema.methods.comparePassword = async function(candidatePassword) {
-  return bcrypt.compare(candidatePassword, this.password);
+  try {
+    return await bcrypt.compare(candidatePassword, this.password);
+  } catch (error) {
+    throw error;
+  }
 };
 
-module.exports = mongoose.model('User', userSchema); 
+const User = mongoose.model('User', userSchema);
+
+ 

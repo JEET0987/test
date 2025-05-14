@@ -45,6 +45,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
   const imageRef = useRef(null);
   const dropZoneRef = useRef(null);
   const fileInputRef = useRef(null);
+  const [showResultLayout, setShowResultLayout] = useState(false);
 
   const categories = ['All', 'Warm', 'Cool', 'Neutral'];
 
@@ -158,160 +159,136 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     setMessage(`Selected color: ${color}`);
   };
 
+  // Helper to convert HEX to RGB
+  const hexToRgb = (hex) => {
+    const value = hex.replace('#', '');
+    const bigint = parseInt(value, 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    return `${r}, ${g}, ${b}`;
+  };
+
+  // Dummy brand data for demonstration
+  const brands = [
+    { name: 'prima', color: 'Sandy Beach', hex: '#c4bbae' },
+    { name: 'kalisan', color: 'Stone', hex: '#b4b7b4' },
+    { name: 'gemar', color: 'Macaron Salmon', hex: '#f5d7c7' },
+    { name: 'tuftex', color: 'Stone', hex: '#b4bbae' },
+    { name: 'balloonia', color: 'Gris/Grey', hex: '#bfc3c7' },
+  ];
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
-      {!mode && (
-        <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12 min-h-[80vh]">
-          <div className="bg-gray-800/90 backdrop-blur-lg rounded-2xl shadow-2xl p-8 sm:p-10 md:p-12 max-w-xl w-full text-center border border-purple-500/20">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-6 tracking-tight">
-              Event Color Match
-            </h1>
-            <p className="text-base sm:text-lg text-gray-300 mb-8 leading-relaxed">
-              Find the perfect color theme for your next event with our professional color matching tool.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <button
-                onClick={() => setMode('upload')}
-                className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl font-semibold text-base shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 border border-purple-500/40"
-              >
-                Upload an Image
-              </button>
-              <button
-                onClick={() => setMode('inspire')}
-                className="w-full sm:w-auto bg-gray-700/90 text-white px-8 py-4 rounded-xl font-semibold text-base border border-purple-500/20 hover:bg-gray-600 hover:border-purple-500/40 shadow-lg hover:shadow-xl transition-all duration-300"
-              >
-                Get Inspired
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {mode === 'upload' && (
-        <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12 min-h-[80vh]">
-          <div className="bg-gray-800/90 backdrop-blur-lg rounded-2xl shadow-2xl p-8 sm:p-10 md:p-12 max-w-xl w-full text-center border border-purple-500/20">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-6 tracking-tight">
-              Upload an Image
-            </h2>
-            <div className="mb-8">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-                ref={fileInputRef}
-              />
-              <div
-                className="border-2 border-dashed border-purple-500/20 rounded-xl p-8 text-center cursor-pointer hover:border-purple-500/40 transition-colors bg-gray-700/30"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                {!imageSrc ? (
-                  <div className="space-y-4">
-                    <div className="text-4xl mb-4">📸</div>
-                    <p className="text-sm text-gray-400">
-                      Drag and drop an image here, or click to select
-                    </p>
-                  </div>
-                ) : (
-                  <div className="relative">
-                    <div className="relative w-full">
-                      <img
-                        src={imageSrc}
-                        alt="Uploaded"
-                        className="max-w-full h-auto rounded-lg"
-                        style={{ display: 'none' }}
-                        ref={imageRef}
-                      />
-                      <canvas
-                        ref={canvasRef}
-                        onClick={handleImageClick}
-                        className="max-w-full h-auto rounded-lg cursor-crosshair"
-                        style={{ touchAction: 'none' }}
-                      />
-                      <div className="absolute bottom-4 left-4 bg-gray-800/90 backdrop-blur-sm px-4 py-2 rounded-lg text-sm text-gray-300">
-                        Click anywhere to pick a color
-                      </div>
+      <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 md:p-12 lg:p-16 min-h-[80vh]">
+        <div className="w-full max-w-4xl mx-auto">
+          {!showResultLayout && (
+            <div className="mb-10 flex flex-col md:flex-row gap-8 items-center justify-center">
+              <div className="flex flex-col items-center w-full md:w-1/2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                  ref={fileInputRef}
+                />
+                <div
+                  className="border-2 border-dashed border-purple-500/20 rounded-2xl p-10 text-center cursor-pointer hover:border-purple-500/40 transition-colors bg-gray-800/80 mb-6 w-full"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {!imageSrc ? (
+                    <div className="space-y-4">
+                      <div className="text-4xl mb-4">📸</div>
+                      <p className="text-sm text-gray-400">
+                        Drag and drop an image here, or click to select
+                      </p>
                     </div>
-                    {localSelectedColor && (
-                      <div className="mt-6 p-4 rounded-xl bg-gray-700/50">
-                        <div className="flex items-center justify-center gap-4">
-                          <div
-                            className="w-12 h-12 rounded-lg border-2 border-purple-500/40"
-                            style={{ backgroundColor: localSelectedColor }}
-                          />
-                          <span className="font-mono text-lg text-white">{localSelectedColor}</span>
+                  ) : (
+                    <div className="relative">
+                      <div className="relative w-full">
+                        <img
+                          src={imageSrc}
+                          alt="Uploaded"
+                          className="max-w-full h-auto rounded-lg"
+                          style={{ display: 'none' }}
+                          ref={imageRef}
+                        />
+                        <canvas
+                          ref={canvasRef}
+                          onClick={handleImageClick}
+                          className="max-w-full h-auto rounded-lg cursor-crosshair"
+                          style={{ touchAction: 'none' }}
+                        />
+                        <div className="absolute bottom-4 left-4 bg-gray-900/90 backdrop-blur-sm px-4 py-2 rounded-lg text-sm text-gray-300">
+                          Click anywhere to pick a color
                         </div>
                       </div>
-                    )}
-                  </div>
+                      {localSelectedColor && (
+                        <div className="mt-6 p-4 rounded-xl bg-gray-900/70">
+                          <div className="flex items-center justify-center gap-4">
+                            <div
+                              className="w-12 h-12 rounded-lg border-2 border-purple-500/40"
+                              style={{ backgroundColor: localSelectedColor }}
+                            />
+                            <span className="font-mono text-lg text-white">{localSelectedColor}</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+                {localSelectedColor && (
+                  <button
+                    onClick={() => setShowResultLayout(true)}
+                    className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl font-semibold text-base shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 border border-purple-500/40"
+                  >
+                    OK
+                  </button>
                 )}
               </div>
             </div>
-            {localSelectedColor && (
-              <button
-                onClick={onNext}
-                className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl font-semibold text-base shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 border border-purple-500/40"
-              >
-                Continue
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
-      {mode === 'inspire' && (
-        <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12 min-h-[80vh]">
-          <div className="bg-gray-800/90 backdrop-blur-lg rounded-2xl shadow-2xl p-8 sm:p-10 md:p-12 max-w-xl w-full text-center border border-purple-500/20">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-6 tracking-tight">
-              Get Inspired
-            </h2>
-            <div className="mb-8">
-              <div className="flex flex-wrap gap-3 justify-center">
-                {['All', 'Warm', 'Cool', 'Neutral'].map((category) => (
-                  <button
-                    key={category}
-                    onClick={() => setActiveCategory(category)}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
-                      activeCategory === category
-                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
-                        : 'bg-gray-700/80 text-gray-300 hover:bg-gray-600 hover:text-white border border-purple-500/20'
-                    }`}
-                  >
-                    {category}
-                  </button>
+          )}
+          {showResultLayout && (
+            <div className="w-full bg-gray-800/90 backdrop-blur-lg rounded-2xl shadow-2xl p-8 sm:p-10 border border-purple-500/20">
+              <div className="flex flex-col md:flex-row gap-8 items-center justify-center">
+                <div className="flex flex-col items-center">
+                  {imageSrc && (
+                    <img src={imageSrc} alt="Uploaded" className="w-48 h-48 object-cover rounded-xl border border-purple-500/40 mb-4" />
+                  )}
+                  {localSelectedColor && (
+                    <div className="flex flex-col items-center mt-2">
+                      <div className="w-10 h-10 rounded-full border-2 border-purple-500/40 mb-2" style={{ backgroundColor: localSelectedColor }} />
+                      <div className="text-xs font-mono text-purple-200">HEX: {localSelectedColor}</div>
+                      <div className="text-xs font-mono text-purple-200">RGB: {hexToRgb(localSelectedColor)}</div>
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 flex flex-col items-center md:items-start">
+                  <div className="flex items-center mb-4">
+                    <img src="/logo192.png" alt="Logo" className="w-10 h-10 mr-4" />
+                    <span className="text-lg font-bold text-purple-200">Balloon Colour Blending</span>
+                  </div>
+                  <div className="bg-gray-900/80 rounded-2xl p-5 text-purple-100 text-left w-full border border-purple-500/10">
+                    <div className="mb-2 font-semibold text-purple-400 text-xs">1. Click to upload image</div>
+                    <div className="mb-2 font-semibold text-purple-400 text-xs">2. Drag the circle to pick a colour</div>
+                    <div className="mb-2 font-semibold text-purple-400 text-xs">3. Click to find match</div>
+                    <div className="mt-2 text-xs text-purple-200">Balloon Colour Blending will provide a suggested or nearest swatch colour match to the uploaded image. The colour match cannot be guaranteed and will depend on the quality and shading of the image and the device used to upload.</div>
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mt-6">
+                {brands.map((brand) => (
+                  <div key={brand.name} className="flex flex-col items-center bg-gray-900/80 rounded-xl p-3 shadow border border-purple-500/20">
+                    <div className="mb-2 text-base font-bold text-purple-300 capitalize">{brand.name}</div>
+                    <div className="w-10 h-10 rounded-full border-2 border-purple-500/40 mb-2" style={{ backgroundColor: brand.hex }} />
+                    <div className="text-xs text-purple-100 font-semibold">{brand.color}</div>
+                  </div>
                 ))}
               </div>
             </div>
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-8">
-              {filteredColors.map((color) => (
-                <div
-                  key={color.hex}
-                  className="relative group"
-                >
-                  <button
-                    onClick={() => handleColorSelect(color.hex)}
-                    className="w-full aspect-square rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]"
-                    style={{ 
-                      backgroundColor: color.hex,
-                      border: localSelectedColor === color.hex ? '3px solid #8B5CF6' : 'none',
-                      boxShadow: localSelectedColor === color.hex ? '0 0 0 2px #1F2937, 0 0 0 4px #8B5CF6' : 'none'
-                    }}
-                  />
-                </div>
-              ))}
-            </div>
-            {localSelectedColor && (
-              <div className="mt-8 p-4 rounded-xl bg-gray-700/50 flex items-center justify-center gap-4">
-                <div
-                  className="w-12 h-12 rounded-lg border-2 border-purple-500/40"
-                  style={{ backgroundColor: localSelectedColor }}
-                />
-                <span className="font-mono text-lg text-white">{localSelectedColor}</span>
-              </div>
-            )}
-          </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

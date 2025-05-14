@@ -9,35 +9,43 @@ dotenv.config();
 // Create Express app
 const app = express();
 
+// CORS configuration
+const corsOptions = {
+  origin: ['https://test-wine-nine-66.vercel.app', 'http://localhost:3000'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Logging middleware to log all requests
+// Logging middleware
 app.use((req, res, next) => {
-  console.log(`${req.method} ${req.url} - Body:`, req.body);
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  console.log('Request Body:', req.body);
   next();
 });
 
-// Database connection
-mongoose.connect('mongodb+srv://anitabhavsar:vrhZZJILwJDgaUco@bcb.u01ogc5.mongodb.net/?retryWrites=true&w=majority&appName=BCB', {
-  // useNewUrlParser and useUnifiedTopology options are deprecated in mongoose 6+
-})
-.then(() => console.log('Connected to MongoDB'))
-.catch((err) => console.error('MongoDB connection error:', err));
-
 // Routes
 app.use('/api/auth', require('./routes/api/auth/auth'));
-app.use('/api/auth/products', require('./routes/api/auth/products'));
-app.use('/api/auth/cart', require('./routes/api/auth/cart'));
-app.use('/api/auth/orders', require('./routes/api/auth/orders'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!' });
+  console.error('Error:', err);
+  res.status(500).json({ 
+    message: 'Internal Server Error',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
 });
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGODB_URI)
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 // Start server
 const PORT = process.env.PORT || 5000;
