@@ -4,7 +4,6 @@ export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(() => {
-<<<<<<< HEAD
     try {
       const saved = localStorage.getItem('cartItems');
       return saved ? JSON.parse(saved) : [];
@@ -24,28 +23,13 @@ export const CartProvider = ({ children }) => {
 
   const addToCart = (product, quantity = 1) => {
     console.log('Adding to cart:', product, quantity); // Debug log
-=======
-    const saved = localStorage.getItem('cartItems');
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  useEffect(() => {
-    localStorage.setItem('cartItems', JSON.stringify(cartItems));
-  }, [cartItems]);
-
-  const addToCart = (product, quantity = 1) => {
->>>>>>> f865efd25f2a7b9fe2838dcf38909f468ac7dd82
     setCartItems((prevItems) => {
       const existing = prevItems.find(item => item.id === product.id);
       if (existing) {
         return prevItems.map(item =>
-<<<<<<< HEAD
           item.id === product.id 
             ? { ...item, quantity: item.quantity + quantity }
             : item
-=======
-          item.id === product.id ? { ...item, quantity: item.quantity + quantity } : item
->>>>>>> f865efd25f2a7b9fe2838dcf38909f468ac7dd82
         );
       } else {
         return [...prevItems, { ...product, quantity }];
@@ -61,7 +45,6 @@ export const CartProvider = ({ children }) => {
     setCartItems([]);
   };
 
-<<<<<<< HEAD
   const totalPrice = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -76,14 +59,6 @@ export const CartProvider = ({ children }) => {
 
   return (
     <CartContext.Provider value={value}>
-=======
-  const totalPrice = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-  const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-
-  return (
-    <CartContext.Provider value={{ cartItems, addToCart, removeFromCart, clearCart, totalPrice, itemCount }}>
->>>>>>> f865efd25f2a7b9fe2838dcf38909f468ac7dd82
       {children}
     </CartContext.Provider>
   );

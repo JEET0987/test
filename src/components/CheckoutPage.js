@@ -60,7 +60,6 @@ const CheckoutPage = ({ onBack }) => {
   }
 
   return (
-<<<<<<< HEAD
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
       <div className="flex-1 flex items-center justify-center p-6 sm:p-8 lg:p-10 min-h-[80vh]">
         <div className="bg-gray-800/90 backdrop-blur-lg rounded-2xl shadow-2xl p-8 sm:p-10 md:p-12 max-w-2xl w-full text-center border border-purple-500/20">
@@ -146,84 +145,6 @@ const CheckoutPage = ({ onBack }) => {
           </form>
         </div>
       </div>
-=======
-    <div className="min-h-screen bg-background flex flex-col">
-     
-      <div className="flex-1">
-        <div className="max-w-2xl mx-auto p-8">
-          <div className="bg-card rounded-lg shadow-sm p-8 border">
-            <h2 className="text-2xl font-bold text-foreground mb-6">Checkout</h2>
-            
-            {/* Cart Items */}
-            <div className="mb-8">
-              <h3 className="font-semibold text-foreground mb-4">Your Cart</h3>
-              {cartItems.map((item) => (
-                <div key={item.id} className="flex items-center justify-between py-2 border-b">
-                  <div>
-                    <p className="text-foreground">{item.name}</p>
-                    <p className="text-sm text-muted-foreground">Quantity: {item.quantity}</p>
-                  </div>
-                  <p className="text-foreground">${(item.price * item.quantity).toFixed(2)}</p>
-                </div>
-              ))}
-              <div className="flex justify-between items-center mt-4 font-semibold">
-                <p className="text-foreground">Total</p>
-                <p className="text-foreground">${totalPrice.toFixed(2)}</p>
-              </div>
-            </div>
-
-            {/* Payment Form */}
-            <form onSubmit={handleCheckout} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Card Details
-                </label>
-                <div className="border rounded-md p-3 bg-background">
-                  <CardElement
-                    options={{
-                      style: {
-                        base: {
-                          fontSize: '16px',
-                          color: '#424770',
-                          '::placeholder': {
-                            color: '#aab7c4',
-                          },
-                        },
-                        invalid: {
-                          color: '#9e2146',
-                        },
-                      },
-                    }}
-                  />
-                </div>
-              </div>
-
-              {error && (
-                <div className="text-red-500 text-sm">{error}</div>
-              )}
-
-              <div className="flex justify-between items-center">
-                <button
-                  type="button"
-                  onClick={onBack}
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
-                  ← Back to Cart
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="bg-primary text-primary-foreground px-6 py-3 rounded-md font-medium hover:bg-primary/90 transition-colors focus-ring disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {loading ? 'Processing...' : `Pay $${totalPrice.toFixed(2)}`}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-      
->>>>>>> f865efd25f2a7b9fe2838dcf38909f468ac7dd82
     </div>
   );
 };

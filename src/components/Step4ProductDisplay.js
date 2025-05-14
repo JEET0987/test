@@ -12,22 +12,16 @@ const productsByTheme = {
       name: 'Circus Tent',
       price: 20,
       image: 'https://m.media-amazon.com/images/I/71N1dstm1uL._SX522_.jpg',
-<<<<<<< HEAD
       description: 'Colorful circus tent decoration',
       stock: 10
-=======
->>>>>>> f865efd25f2a7b9fe2838dcf38909f468ac7dd82
     },
     {
       id: 2,
       name: 'Clown Costume',
       price: 15,
       image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCVPaZ4kqBUrdpJrRPZxMOFqvcyqBhcS1XYQ&s',
-<<<<<<< HEAD
       description: 'Fun clown costume for parties',
       stock: 15
-=======
->>>>>>> f865efd25f2a7b9fe2838dcf38909f468ac7dd82
     },
   ],
   Gaming: [
@@ -36,22 +30,16 @@ const productsByTheme = {
       name: 'Gaming Chair',
       price: 30,
       image: 'https://m.media-amazon.com/images/I/81nsrszBdQL._AC_UF894,1000_QL80_.jpg',
-<<<<<<< HEAD
       description: 'Comfortable gaming chair',
       stock: 8
-=======
->>>>>>> f865efd25f2a7b9fe2838dcf38909f468ac7dd82
     },
     {
       id: 4,
       name: 'Game Console',
       price: 50,
       image: 'https://m.media-amazon.com/images/I/71+-T1Kpo8L.jpg',
-<<<<<<< HEAD
       description: 'Popular gaming console',
       stock: 5
-=======
->>>>>>> f865efd25f2a7b9fe2838dcf38909f468ac7dd82
     },
   ],
   Space: [
@@ -60,22 +48,16 @@ const productsByTheme = {
       name: 'Space Helmet',
       price: 25,
       image: 'https://m.media-amazon.com/images/I/81TYRg236eL.jpg',
-<<<<<<< HEAD
       description: 'Realistic space helmet',
       stock: 12
-=======
->>>>>>> f865efd25f2a7b9fe2838dcf38909f468ac7dd82
     },
     {
       id: 6,
       name: 'Rocket Model',
       price: 35,
       image: 'https://m.media-amazon.com/images/I/71sUcSErpHL.jpg',
-<<<<<<< HEAD
       description: 'Detailed rocket model',
       stock: 7
-=======
->>>>>>> f865efd25f2a7b9fe2838dcf38909f468ac7dd82
     },
   ],
   Romantic: [
@@ -233,13 +215,8 @@ const productsByTheme = {
 };
 
 const Step4ProductDisplay = ({ selectedTheme = 'Default', onNext }) => {
-<<<<<<< HEAD
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('name');
-=======
-  const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('price');
->>>>>>> f865efd25f2a7b9fe2838dcf38909f468ac7dd82
   const { addToCart } = useContext(CartContext);
   const navigate = useNavigate();
 
@@ -249,7 +226,6 @@ const Step4ProductDisplay = ({ selectedTheme = 'Default', onNext }) => {
 
   const filteredProducts = products
     .filter((product) =>
-<<<<<<< HEAD
       product.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
       (!product.description || product.description.toLowerCase().includes(searchQuery.toLowerCase()))
     )
@@ -260,15 +236,6 @@ const Step4ProductDisplay = ({ selectedTheme = 'Default', onNext }) => {
         return a.price - b.price;
       } else if (sortBy === 'price-desc') {
         return b.price - a.price;
-=======
-      product.name.toLowerCase().includes(searchTerm.toLowerCase())
-    )
-    .sort((a, b) => {
-      if (sortBy === 'price') {
-        return a.price - b.price;
-      } else if (sortBy === 'popularity') {
-        return 0;
->>>>>>> f865efd25f2a7b9fe2838dcf38909f468ac7dd82
       }
       return 0;
     });
@@ -281,22 +248,16 @@ const Step4ProductDisplay = ({ selectedTheme = 'Default', onNext }) => {
   const handleAddToCart = (product) => {
     const quantity = quantities[product.id] || 1;
     if (quantity > 0) {
-<<<<<<< HEAD
       const productToAdd = {
         ...product,
         quantity: quantity
       };
       addToCart(productToAdd, quantity);
       toast.success(`${quantity} ${product.name} added to cart`);
-=======
-      addToCart(product, quantity);
-      toast.success('Successfully added to cart');
->>>>>>> f865efd25f2a7b9fe2838dcf38909f468ac7dd82
       setQuantities((prev) => ({ ...prev, [product.id]: 0 }));
     }
   };
 
-<<<<<<< HEAD
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const handleProductSelect = (productId) => {
@@ -390,75 +351,6 @@ const Step4ProductDisplay = ({ selectedTheme = 'Default', onNext }) => {
                       handleAddToCart(product);
                     }}
                     className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300"
-=======
-  return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-purple-50 via-pink-50 to-yellow-50">
-      {/* <Header /> */}
-      <div className="flex-1 flex flex-col items-center justify-center p-6 sm:p-8 lg:p-10 min-h-[80vh]">
-        <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-10 max-w-5xl w-full text-center border border-purple-100">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-party-purple mb-6 drop-shadow-[0_2px_8px_rgba(80,0,80,0.15)]">
-            Product Display
-          </h2>
-          <div className="mb-12 flex flex-col sm:flex-row justify-center gap-4 max-w-3xl mx-auto">
-            <div className="relative flex-1">
-              <input
-                type="text"
-                placeholder="Search by product name..."
-                className="w-full p-4 rounded-lg border-2 border-gray-200 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <div className="flex items-center gap-3">
-              <label htmlFor="sort" className="text-gray-700 font-medium">
-                Sort by:
-              </label>
-              <select
-                id="sort"
-                className="p-4 rounded-lg border-2 border-gray-200 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-              >
-                <option value="price">Price: Low to High</option>
-                <option value="popularity">Popularity</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {filteredProducts.map((product) => (
-              <div
-                key={product.id}
-                className="group bg-white/70 backdrop-blur-lg rounded-2xl border-2 border-purple-100 shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
-              >
-                <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-t-2xl" />
-                </div>
-                <div className="p-6 flex-1 flex flex-col justify-between">
-                  <h3 className="text-xl font-bold text-party-purple mb-2 drop-shadow-[0_2px_8px_rgba(80,0,80,0.10)]">{product.name}</h3>
-                  <p className="text-2xl font-bold text-purple-700 mb-4 drop-shadow-[0_2px_8px_rgba(80,0,80,0.10)]">₹{product.price}</p>
-                  <div className="flex items-center gap-4 mb-4">
-                    <label htmlFor={`quantity-${product.id}`} className="text-gray-700 font-medium">
-                      Quantity:
-                    </label>
-                    <input
-                      type="number"
-                      id={`quantity-${product.id}`}
-                      min="0"
-                      value={quantities[product.id] || 0}
-                      onChange={(e) => handleQuantityChange(product.id, e.target.value)}
-                      className="w-20 p-2 rounded-lg border-2 border-purple-200 bg-white/80 text-purple-900 focus:outline-none focus:ring-2 focus:ring-party-purple focus:border-transparent transition-all"
-                    />
-                  </div>
-                  <button
-                    onClick={() => handleAddToCart(product)}
-                    className="w-full bg-gradient-to-r from-party-purple to-pink-400 text-party-purple py-3 rounded-full text-lg font-bold shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300 border-2 border-white/40 focus:outline-none focus:ring-2 focus:ring-party-purple focus:ring-offset-2"
->>>>>>> f865efd25f2a7b9fe2838dcf38909f468ac7dd82
                   >
                     Add to Cart
                   </button>
@@ -466,7 +358,6 @@ const Step4ProductDisplay = ({ selectedTheme = 'Default', onNext }) => {
               </div>
             ))}
           </div>
-<<<<<<< HEAD
           {selectedProduct && (
             <button
               onClick={onNext}
@@ -475,22 +366,6 @@ const Step4ProductDisplay = ({ selectedTheme = 'Default', onNext }) => {
               Continue
             </button>
           )}
-=======
-          <div className="mt-8 flex justify-center gap-4">
-            <button
-              onClick={() => navigate('/step3')}
-              className="bg-white/80 text-party-purple px-8 py-4 rounded-full font-bold border border-purple-200 hover:bg-purple-50 hover:text-purple-700 shadow transition-all duration-300"
-            >
-              Back
-            </button>
-            <button
-              onClick={onNext}
-              className="bg-gradient-to-r from-party-purple to-pink-400 text-party-purple px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300 border-2 border-white/40"
-            >
-              Next
-            </button>
-          </div>
->>>>>>> f865efd25f2a7b9fe2838dcf38909f468ac7dd82
         </div>
       </div>
       
@@ -504,11 +379,7 @@ const Step4ProductDisplay = ({ selectedTheme = 'Default', onNext }) => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-<<<<<<< HEAD
         theme="dark"
-=======
-        theme="light"
->>>>>>> f865efd25f2a7b9fe2838dcf38909f468ac7dd82
       />
     </div>
   );
