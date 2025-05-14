@@ -1,0 +1,227 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 270 50% 98%;
+    --foreground: 270 50% 10%;
+    --card: 270 50% 100%;
+    --card-foreground: 270 50% 10%;
+    --popover: 270 50% 100%;
+    --popover-foreground: 270 50% 10%;
+    --primary: 270 50% 50%;
+    --primary-foreground: 270 50% 98%;
+    --secondary: 270 30% 90%;
+    --secondary-foreground: 270 50% 10%;
+    --muted: 270 30% 90%;
+    --muted-foreground: 270 30% 45%;
+    --accent: 270 30% 90%;
+    --accent-foreground: 270 50% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 270 30% 85%;
+    --input: 270 30% 85%;
+    --ring: 270 50% 50%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 270 50% 10%;
+    --foreground: 270 50% 98%;
+    --card: 270 50% 15%;
+    --card-foreground: 270 50% 98%;
+    --popover: 270 50% 15%;
+    --popover-foreground: 270 50% 98%;
+    --primary: 270 50% 60%;
+    --primary-foreground: 270 50% 98%;
+    --secondary: 270 30% 25%;
+    --secondary-foreground: 270 50% 98%;
+    --muted: 270 30% 25%;
+    --muted-foreground: 270 30% 70%;
+    --accent: 270 30% 25%;
+    --accent-foreground: 270 50% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 270 30% 25%;
+    --input: 270 30% 25%;
+    --ring: 270 50% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .container {
+    @apply px-4 mx-auto w-full max-w-7xl sm:px-6 lg:px-8;
+  }
+
+  .prose {
+    @apply max-w-prose mx-auto;
+  }
+
+  .section {
+    @apply py-8 sm:py-12 md:py-16 lg:py-20;
+  }
+
+  /* Mobile-first responsive text */
+  .responsive-text {
+    @apply text-base sm:text-lg md:text-xl lg:text-2xl;
+  }
+
+  .responsive-heading {
+    @apply text-2xl sm:text-3xl md:text-4xl lg:text-5xl;
+  }
+
+  /* Mobile-first responsive padding */
+  .responsive-padding {
+    @apply p-4 sm:p-6 md:p-8 lg:p-10;
+  }
+
+  /* Mobile-first responsive margin */
+  .responsive-margin {
+    @apply m-4 sm:m-6 md:m-8 lg:m-10;
+  }
+
+  /* Mobile-first responsive grid */
+  .responsive-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8;
+  }
+
+  /* Mobile-first responsive flex */
+  .responsive-flex {
+    @apply flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 md:gap-8;
+  }
+
+  /* Party-themed button */
+  .btn-party {
+    @apply bg-primary text-primary-foreground font-bold py-2 px-4 rounded shadow-lg hover:bg-accent hover:text-accent-foreground transition-colors duration-300 w-full sm:w-auto;
+  }
+
+  /* Mobile-first card */
+  .responsive-card {
+    @apply bg-card rounded-lg border p-4 sm:p-6 md:p-8 shadow-sm w-full max-w-lg mx-auto;
+  }
+
+  /* Mobile-first form elements */
+  .responsive-input {
+    @apply w-full px-3 py-2 sm:px-4 sm:py-3 rounded-md border border-input bg-background text-foreground;
+  }
+
+  .responsive-button {
+    @apply w-full sm:w-auto px-4 py-2 sm:px-6 sm:py-3 rounded-md font-medium transition-all duration-300 transform hover:scale-[1.02] focus-ring;
+  }
+}
+
+/* Mobile-first animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Mobile-first transitions */
+.transition-mobile {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+/* Mobile-first hover effects */
+@media (hover: hover) {
+  .hover-effect {
+    @apply transition-transform duration-300 hover:scale-105;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-hide {
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+  }
+}
+
+/* Party Theme Custom Styles */
+
+/* Background gradients using purple tones */
+.bg-party-gradient {
+  background: linear-gradient(135deg, #9B59B6, #8E44AD, #6C3483);
+}
+
+/* Text styles */
+.text-party-purple {
+  color: #9B59B6;
+}
+.text-party-dark-purple {
+  color: #8E44AD;
+}
+.text-party-darker-purple {
+  color: #6C3483;
+}
+.text-party-light-purple {
+  color: #BB8FCE;
+}
+.text-party-lighter-purple {
+  color: #D2B4DE;
+}
+
+/* Confetti animation */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: #9B59B6;
+  animation: confetti-fall 3s linear infinite;
+  opacity: 0.8;
+  border-radius: 2px;
+}
+
+/* Sparkle animation */
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.2);
+  }
+}
+
+.sparkle {
+  display: inline-block;
+  color: #9B59B6;
+  animation: sparkle 1.5s ease-in-out infinite;
+}
