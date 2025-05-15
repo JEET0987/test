@@ -245,7 +245,14 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
           brand: item.brand,
           color: item.singleColour,
           hex: item.singleHex,
-          image: item.balloonImage
+          image: item.balloonImage,
+          newColour: item.newColour,
+          mixedColourTitle: item.mixedColourTitle,
+          mixedHex: item.mixedHex,
+          outsideColour: item.outsideColour,
+          outsideHex: item.outsideHex,
+          insideColour: item.insideColour,
+          insideHex: item.insideHex
         }));
         console.log('Mapped balloons:', mapped);
         setBalloons(mapped);
@@ -358,7 +365,14 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
           brand: item.brand,
           color: item.singleColour,
           hex: item.singleHex,
-          image: item.balloonImage
+          image: item.balloonImage,
+          newColour: item.newColour,
+          mixedColourTitle: item.mixedColourTitle,
+          mixedHex: item.mixedHex,
+          outsideColour: item.outsideColour,
+          outsideHex: item.outsideHex,
+          insideColour: item.insideColour,
+          insideHex: item.insideHex
         }));
         console.log('Mapped balloons:', mapped);
         setBalloons(mapped);
@@ -610,8 +624,23 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
                   ) : (
                     <div className="w-12 h-12 rounded-full border-2 border-purple-200 mb-2" style={{ backgroundColor: balloon.hex }} />
                   )}
-                  <div className="text-xs text-gray-200 font-semibold">{balloon.color}</div>
+                  <div className="text-xs text-gray-200 font-semibold">{balloon.newColour || balloon.color}</div>
                   <div className="text-xs text-gray-400 font-mono mt-1">{balloon.hex}</div>
+                  {balloon.mixedColourTitle && (
+                    <div className="text-xs text-gray-300 mt-1">
+                      <span className="text-purple-300">Mixed:</span> {balloon.mixedColourTitle}
+                    </div>
+                  )}
+                  {balloon.outsideColour && (
+                    <div className="text-xs text-gray-300">
+                      <span className="text-purple-300">Outside:</span> {balloon.outsideColour}
+                    </div>
+                  )}
+                  {balloon.insideColour && (
+                    <div className="text-xs text-gray-300">
+                      <span className="text-purple-300">Inside:</span> {balloon.insideColour}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
