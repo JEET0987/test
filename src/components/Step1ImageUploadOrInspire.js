@@ -214,9 +214,13 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
 
   // Fetch balloons from backend
   useEffect(() => {
-    fetch('https://balloon-backend.vercel.app/api/auth/products')
-      .then(res => res.json())
-      .then(data => {
+    const fetchBalloons = async () => {
+      try {
+        const response = await fetch('https://balloon-backend.vercel.app/api/auth/products');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
         const mapped = data.map(item => ({
           _id: item._id,
           brand: item.brand,
@@ -225,33 +229,53 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
           image: item.balloonImage
         }));
         setBalloons(mapped);
-      })
-      .catch(err => setBalloons([]));
+      } catch (error) {
+        console.error('Error fetching balloons:', error);
+        setMessage('Error loading balloon data. Please try again.');
+        setBalloons([]);
+      }
+    };
+    fetchBalloons();
   }, []);
 
   // Helper: hex to rgb
   function hexToRgbArr(hex) {
+    console.log('Converting hex to RGB:', hex);
     hex = hex.replace('#', '');
     if (hex.length === 3) hex = hex.split('').map(x => x + x).join('');
     const num = parseInt(hex, 16);
-    return [num >> 16, (num >> 8) & 255, num & 255];
+    const result = [num >> 16, (num >> 8) & 255, num & 255];
+    console.log('RGB result:', result);
+    return result;
   }
   function colorDistance(rgb1, rgb2) {
-    return Math.sqrt(
+    const distance = Math.sqrt(
       Math.pow(rgb1[0] - rgb2[0], 2) +
       Math.pow(rgb1[1] - rgb2[1], 2) +
       Math.pow(rgb1[2] - rgb2[2], 2)
     );
+    console.log('Color distance:', distance);
+    return distance;
   }
   function findClosestBalloons(selectedHex) {
-    if (!selectedHex || balloons.length === 0) return [];
+    console.log('Finding closest balloons for color:', selectedHex);
+    if (!selectedHex || balloons.length === 0) {
+      console.log('No selected color or no balloons available');
+      return [];
+    }
+    
     const selectedRgb = hexToRgbArr(selectedHex);
+    console.log('Selected RGB:', selectedRgb);
+    
     const grouped = {};
     balloons.forEach(balloon => {
       if (!balloon.brand) return;
       if (!grouped[balloon.brand]) grouped[balloon.brand] = [];
       grouped[balloon.brand].push(balloon);
     });
+    
+    console.log('Grouped balloons:', grouped);
+    
     const closest = [];
     Object.entries(grouped).forEach(([brand, arr]) => {
       let minDist = Infinity;
@@ -267,11 +291,64 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
       });
       if (best) closest.push(best);
     });
+    
+    console.log('Closest matches:', closest);
     return closest;
   }
-  const handleFindMatch = () => {
-    setClosestBalloons(findClosestBalloons(localSelectedColor));
-    setShowMatches(true);
+  const handleFindMatch = async () => {
+    try {
+      console.log('Find Match clicked');
+      console.log('Selected color:', localSelectedColor);
+      console.log('Current balloons:', balloons);
+
+      if (!localSelectedColor) {
+        console.log('No color selected');
+        setMessage('Please select a color first');
+        return;
+      }
+      
+      // If balloons are not loaded yet, try to fetch them
+      if (balloons.length === 0) {
+        console.log('Fetching balloons from API...');
+        const response = await fetch('https://balloon-backend.vercel.app/api/auth/products', {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        console.log('API Response status:', response.status);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('API Response data:', data);
+        
+        const mapped = data.map(item => ({
+          _id: item._id,
+          brand: item.brand,
+          color: item.singleColour,
+          hex: item.singleHex,
+          image: item.balloonImage
+        }));
+        console.log('Mapped balloons:', mapped);
+        setBalloons(mapped);
+      }
+      
+      console.log('Finding closest balloons...');
+      const matches = findClosestBalloons(localSelectedColor);
+      console.log('Found matches:', matches);
+      
+      setClosestBalloons(matches);
+      setShowMatches(true);
+      setMessage('Found matching balloons!');
+    } catch (error) {
+      console.error('Error finding matches:', error);
+      setMessage('Error finding matches. Please try again.');
+    }
   };
 
   // Magnifier settings
