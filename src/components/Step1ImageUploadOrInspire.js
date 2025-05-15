@@ -143,6 +143,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
   };
 
   const rgbToHex = (r, g, b) => {
+    // Keep original case from backend
     return '#' + [r, g, b].map(x => {
       const hex = x.toString(16);
       return hex.length === 1 ? '0' + hex : hex;
@@ -202,7 +203,13 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     setMessage(`Selected color: ${color}`);
   };
 
-  // Helper to convert HEX to RGB
+  // Update the color handling functions to work with both cases
+  const normalizeHex = (hex) => {
+    if (!hex) return '';
+    // Just ensure # prefix is present, keep original case
+    return hex.startsWith('#') ? hex : `#${hex}`;
+  };
+
   const hexToRgb = (hex) => {
     const value = hex.replace('#', '');
     const bigint = parseInt(value, 16);
@@ -210,6 +217,59 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     const g = (bigint >> 8) & 255;
     const b = bigint & 255;
     return `${r}, ${g}, ${b}`;
+  };
+
+  function hexToRgbArr(hex) {
+    console.log('Converting hex to RGB:', hex);
+    hex = hex.replace('#', '');
+    if (hex.length === 3) hex = hex.split('').map(x => x + x).join('');
+    const num = parseInt(hex, 16);
+    const result = [num >> 16, (num >> 8) & 255, num & 255];
+    console.log('RGB result:', result);
+    return result;
+  }
+
+  // Update the balloon mapping to preserve original case
+  const mapped = data.map(item => ({
+    _id: item._id,
+    brand: item.brand,
+    color: item.singleColour,
+    hex: normalizeHex(item.singleHex),
+    image: item.balloonImage,
+    newColour: item.newColour,
+    mixedColourTitle: item.mixedColourTitle,
+    mixedHex: normalizeHex(item.mixedHex),
+    outsideColour: item.outsideColour,
+    outsideHex: normalizeHex(item.outsideHex),
+    insideColour: item.insideColour,
+    insideHex: normalizeHex(item.insideHex)
+  }));
+
+  // Update the handleCanvasMouseMove function to use uppercase hex
+  const handleCanvasMouseMove = (e) => {
+    try {
+      if (!canvasRef.current) return;
+      const canvas = canvasRef.current;
+      const rect = canvas.getBoundingClientRect();
+      
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+      
+      setMagnifierPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+      
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      
+      const imageData = ctx.getImageData(Math.floor(x), Math.floor(y), 1, 1).data;
+      const hex = rgbToHex(imageData[0], imageData[1], imageData[2]);
+      setMagnifierColor(hex);
+      setHoveredColor(hex);
+    } catch (error) {
+      console.error('Error in handleCanvasMouseMove:', error);
+    }
   };
 
   // Fetch balloons from backend
@@ -244,15 +304,15 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
           _id: item._id,
           brand: item.brand,
           color: item.singleColour,
-          hex: item.singleHex,
+          hex: normalizeHex(item.singleHex),
           image: item.balloonImage,
           newColour: item.newColour,
           mixedColourTitle: item.mixedColourTitle,
-          mixedHex: item.mixedHex,
+          mixedHex: normalizeHex(item.mixedHex),
           outsideColour: item.outsideColour,
-          outsideHex: item.outsideHex,
+          outsideHex: normalizeHex(item.outsideHex),
           insideColour: item.insideColour,
-          insideHex: item.insideHex
+          insideHex: normalizeHex(item.insideHex)
         }));
         console.log('Mapped balloons:', mapped);
         setBalloons(mapped);
@@ -265,16 +325,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     fetchBalloons();
   }, []);
 
-  // Helper: hex to rgb
-  function hexToRgbArr(hex) {
-    console.log('Converting hex to RGB:', hex);
-    hex = hex.replace('#', '');
-    if (hex.length === 3) hex = hex.split('').map(x => x + x).join('');
-    const num = parseInt(hex, 16);
-    const result = [num >> 16, (num >> 8) & 255, num & 255];
-    console.log('RGB result:', result);
-    return result;
-  }
+  // Update the color distance calculation to work with both cases
   function colorDistance(rgb1, rgb2) {
     const distance = Math.sqrt(
       Math.pow(rgb1[0] - rgb2[0], 2) +
@@ -284,6 +335,8 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     console.log('Color distance:', distance);
     return distance;
   }
+
+  // Update the findClosestBalloons function to work with both cases
   function findClosestBalloons(selectedHex) {
     console.log('Finding closest balloons for color:', selectedHex);
     if (!selectedHex || balloons.length === 0) {
@@ -291,7 +344,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
       return [];
     }
     
-    const selectedRgb = hexToRgbArr(selectedHex);
+    const selectedRgb = hexToRgbArr(normalizeHex(selectedHex));
     console.log('Selected RGB:', selectedRgb);
     
     const grouped = {};
@@ -309,7 +362,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
       let best = null;
       arr.forEach(balloon => {
         if (!balloon.hex) return;
-        const balloonRgb = hexToRgbArr(balloon.hex);
+        const balloonRgb = hexToRgbArr(normalizeHex(balloon.hex));
         const dist = colorDistance(selectedRgb, balloonRgb);
         if (dist < minDist) {
           minDist = dist;
@@ -322,6 +375,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     console.log('Closest matches:', closest);
     return closest;
   }
+
   const handleFindMatch = async () => {
     try {
       console.log('Find Match clicked');
@@ -364,15 +418,15 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
           _id: item._id,
           brand: item.brand,
           color: item.singleColour,
-          hex: item.singleHex,
+          hex: normalizeHex(item.singleHex),
           image: item.balloonImage,
           newColour: item.newColour,
           mixedColourTitle: item.mixedColourTitle,
-          mixedHex: item.mixedHex,
+          mixedHex: normalizeHex(item.mixedHex),
           outsideColour: item.outsideColour,
-          outsideHex: item.outsideHex,
+          outsideHex: normalizeHex(item.outsideHex),
           insideColour: item.insideColour,
-          insideHex: item.insideHex
+          insideHex: normalizeHex(item.insideHex)
         }));
         console.log('Mapped balloons:', mapped);
         setBalloons(mapped);
@@ -394,36 +448,6 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
   // Magnifier settings
   const MAGNIFIER_SIZE = 100;
   const MAGNIFIER_ZOOM = 3;
-
-  const handleCanvasMouseMove = (e) => {
-    try {
-      if (!canvasRef.current) return;
-      const canvas = canvasRef.current;
-      const rect = canvas.getBoundingClientRect();
-      
-      // Calculate the correct scale factors
-      const scaleX = canvas.width / rect.width;
-      const scaleY = canvas.height / rect.height;
-      
-      // Calculate the position relative to the canvas
-      const x = (e.clientX - rect.left) * scaleX;
-      const y = (e.clientY - rect.top) * scaleY;
-      
-      // Update magnifier position
-      setMagnifierPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-      
-      // Get color under cursor
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-      
-      const imageData = ctx.getImageData(Math.floor(x), Math.floor(y), 1, 1).data;
-      const hex = rgbToHex(imageData[0], imageData[1], imageData[2]);
-      setMagnifierColor(hex);
-      setHoveredColor(hex);
-    } catch (error) {
-      console.error('Error in handleCanvasMouseMove:', error);
-    }
-  };
 
   const handleCanvasMouseEnter = () => setMagnifierVisible(true);
   const handleCanvasMouseLeave = () => setMagnifierVisible(false);
