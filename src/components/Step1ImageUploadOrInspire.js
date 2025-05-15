@@ -54,6 +54,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
   const [selectingSecond, setSelectingSecond] = useState(false);
   const [balloons, setBalloons] = useState([]);
   const [closestBalloons, setClosestBalloons] = useState([]);
+  const [showMatches, setShowMatches] = useState(false);
 
   const categories = ['All', 'Warm', 'Cool', 'Neutral'];
 
@@ -191,13 +192,9 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
       Math.pow(rgb1[2] - rgb2[2], 2)
     );
   }
-  // Find closest balloons by brand when color is selected
-  useEffect(() => {
-    if (!localSelectedColor || balloons.length === 0) {
-      setClosestBalloons([]);
-      return;
-    }
-    const selectedRgb = hexToRgbArr(localSelectedColor);
+  function findClosestBalloons(selectedHex) {
+    if (!selectedHex || balloons.length === 0) return [];
+    const selectedRgb = hexToRgbArr(selectedHex);
     const grouped = {};
     balloons.forEach(balloon => {
       if (!balloon.brand) return;
@@ -219,8 +216,12 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
       });
       if (best) closest.push(best);
     });
-    setClosestBalloons(closest);
-  }, [localSelectedColor, balloons]);
+    return closest;
+  }
+  const handleFindMatch = () => {
+    setClosestBalloons(findClosestBalloons(localSelectedColor));
+    setShowMatches(true);
+  };
 
   // Magnifier settings
   const MAGNIFIER_SIZE = 100;
@@ -418,7 +419,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
                 <div className="flex items-center gap-2">
                   <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full px-3 py-1 text-sm font-bold shadow">3</span>
                   <button
-                    onClick={() => setShowResultLayout(true)}
+                    onClick={handleFindMatch}
                     className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-lg font-bold shadow-xl border-2 border-purple-500/40 hover:scale-105 hover:shadow-2xl transition"
                     disabled={!localSelectedColor}
                   >
@@ -432,19 +433,22 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
             </div>
           </div>
           {/* Brand color cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mt-8">
-            {closestBalloons.map((balloon) => (
-              <div key={balloon._id || balloon.id || balloon.hex + balloon.brand} className="flex flex-col items-center bg-gray-900/60 rounded-xl p-3 shadow border border-purple-500/20">
-                <div className="mb-2 text-base font-bold text-purple-200 capitalize">{balloon.brand}</div>
-                {balloon.image ? (
-                  <img src={balloon.image} alt={balloon.color} className="w-12 h-12 rounded-full border-2 border-purple-200 mb-2 object-cover" />
-                ) : (
-                  <div className="w-12 h-12 rounded-full border-2 border-purple-200 mb-2" style={{ backgroundColor: balloon.hex }} />
-                )}
-                <div className="text-xs text-gray-200 font-semibold">{balloon.color}</div>
-              </div>
-            ))}
-          </div>
+          {showMatches && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mt-8">
+              {closestBalloons.map((balloon) => (
+                <div key={balloon._id || balloon.id || balloon.hex + balloon.brand} className="flex flex-col items-center bg-gray-900/60 rounded-xl p-3 shadow border border-purple-500/20">
+                  <div className="mb-2 text-base font-bold text-purple-200 capitalize">{balloon.brand}</div>
+                  {balloon.image ? (
+                    <img src={balloon.image} alt={balloon.color} className="w-12 h-12 rounded-full border-2 border-purple-200 mb-2 object-cover" />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full border-2 border-purple-200 mb-2" style={{ backgroundColor: balloon.hex }} />
+                  )}
+                  <div className="text-xs text-gray-200 font-semibold">{balloon.color}</div>
+                  <div className="text-xs text-gray-400 font-mono mt-1">{balloon.hex}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
