@@ -279,46 +279,35 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
         }
         
         const data = await response.json();
-        console.log('Raw balloon data sample:', data.slice(0, 2));
+        console.log('API Response data:', data);
         
         if (!Array.isArray(data)) {
           throw new Error('Invalid data format received from server');
         }
         
         const mapped = data.map(item => {
-          // Log the structure of the first few items to understand the data format
-          if (data.indexOf(item) < 2) {
-            console.log('Sample item structure:', item);
-          }
-          
-          // Check if the item has the required fields
+          // Skip items without required fields
           if (!item.brand || !item.singleHex) {
-            console.log('Item missing required fields:', {
-              brand: item.brand,
-              singleHex: item.singleHex,
-              item: item
-            });
             return null;
           }
-          
+
           return {
             _id: item._id,
             brand: item.brand,
-            color: item.singleColour || item.color,
+            color: item.singleColour || item.color || '',
             hex: normalizeHex(item.singleHex),
-            image: item.balloonImage || item.image,
-            newColour: item.newColour,
-            mixedColourTitle: item.mixedColourTitle,
-            mixedHex: normalizeHex(item.mixedHex),
-            outsideColour: item.outsideColour,
-            outsideHex: normalizeHex(item.outsideHex),
-            insideColour: item.insideColour,
-            insideHex: normalizeHex(item.insideHex)
+            image: item.balloonImage || item.image || '',
+            newColour: item.newColour || '',
+            mixedColourTitle: item.mixedColourTitle || '',
+            mixedHex: normalizeHex(item.mixedHex || ''),
+            outsideColour: item.outsideColour || '',
+            outsideHex: normalizeHex(item.outsideHex || ''),
+            insideColour: item.insideColour || '',
+            insideHex: normalizeHex(item.insideHex || '')
           };
         }).filter(Boolean); // Remove null items
         
-        console.log('Processed balloon data sample:', mapped.slice(0, 2));
-        console.log('Total valid balloons:', mapped.length);
+        console.log('Mapped balloons:', mapped);
         
         if (mapped.length === 0) {
           console.error('No valid balloons found in the data');
@@ -363,7 +352,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     return distance;
   }
 
-  // Update the findClosestBalloons function to work with both cases
+  // Update the findClosestBalloons function
   function findClosestBalloons(selectedHex) {
     console.log('Finding closest balloons for color:', selectedHex);
     if (!selectedHex || balloons.length === 0) {
@@ -380,7 +369,6 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     
     balloons.forEach(balloon => {
       if (!balloon.brand || !balloon.hex) {
-        console.log('Invalid balloon data:', balloon);
         return;
       }
       validBalloons++;
@@ -390,7 +378,6 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     
     console.log('Valid balloons processed:', validBalloons);
     console.log('Grouped balloons by brand:', Object.keys(grouped).length);
-    console.log('Brands found:', Object.keys(grouped));
     
     if (validBalloons === 0) {
       console.error('No valid balloons to process');
@@ -413,7 +400,6 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
       });
       
       if (best) {
-        console.log(`Best match for ${brand}:`, best.hex, 'Distance:', minDist);
         closest.push(best);
       }
     });
@@ -425,7 +411,6 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
       return distA - distB;
     });
     
-    console.log('Closest matches:', closest.length);
     return closest;
   }
 
