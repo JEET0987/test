@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Header from './Header';
 import Footer from './Footer';
+import colorMatchingService from '../services/colorMatchingService';
 
 const inspirationColors = [
   // Warm Colors
@@ -432,63 +433,70 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     try {
       console.log('Find Match clicked');
       console.log('Selected color:', localSelectedColor);
-      console.log('Current balloons:', balloons);
 
       if (!localSelectedColor) {
         console.log('No color selected');
         setMessage('Please select a color first');
         return;
       }
+
+      setMessage('Analyzing color and finding matches...');
       
-      // If balloons are not loaded yet, try to fetch them
-      if (balloons.length === 0) {
-        console.log('Fetching balloons from Vercel...');
-        const response = await fetch('https://balloon-backend.vercel.app/api/auth/products', {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          mode: 'cors',
-          credentials: 'include'
-        });
-        
-        console.log('Response status:', response.status);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('API Response data:', data);
-        
-        if (!Array.isArray(data)) {
-          throw new Error('Invalid data format received from server');
-        }
-        
-        const mapped = data.map(item => ({
-          _id: item._id,
-          brand: item.brand,
-          color: item.singleColour,
-          hex: normalizeHex(item.singleHex),
-          image: item.balloonImage,
-          newColour: item.newColour,
-          mixedColourTitle: item.mixedColourTitle,
-          mixedHex: normalizeHex(item.mixedHex),
-          outsideColour: item.outsideColour,
-          outsideHex: normalizeHex(item.outsideHex),
-          insideColour: item.insideColour,
-          insideHex: normalizeHex(item.insideHex)
-        }));
-        console.log('Mapped balloons:', mapped);
-        setBalloons(mapped);
+      // First get all balloons from backend
+      const balloonsResponse = await fetch('https://balloon-backend.vercel.app/api/auth/products', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        credentials: 'include'
+      });
+
+      if (!balloonsResponse.ok) {
+        throw new Error(`HTTP error! status: ${balloonsResponse.status}`);
       }
-      
-      console.log('Finding closest balloons...');
-      const matches = findClosestBalloons(localSelectedColor);
-      console.log('Found matches:', matches);
-      
-      setClosestBalloons(matches);
+
+      const balloonsData = await balloonsResponse.json();
+      const mappedBalloons = balloonsData.map(item => ({
+        _id: item._id,
+        brand: item.brand,
+        color: item.singleColour || item.color,
+        hex: normalizeHex(item.singleHex),
+        image: item.balloonImage || item.image,
+        newColour: item.newColour,
+        mixedColourTitle: item.mixedColourTitle,
+        mixedHex: normalizeHex(item.mixedHex),
+        outsideColour: item.outsideColour,
+        outsideHex: normalizeHex(item.outsideHex),
+        insideColour: item.insideColour,
+        insideHex: normalizeHex(item.insideHex)
+      }));
+
+      // Use LangChain to analyze the color and find matches
+      const colorAnalysis = await colorMatchingService.analyzeColor(localSelectedColor);
+      console.log('Color Analysis:', colorAnalysis);
+
+      // Find matches using both color analysis and color distance
+      const matches = await colorMatchingService.findMatchingBalloons(localSelectedColor, mappedBalloons);
+      console.log('AI Matches:', matches);
+
+      // Combine AI matches with color distance for better results
+      const closestMatches = findClosestBalloons(localSelectedColor);
+      console.log('Color Distance Matches:', closestMatches);
+
+      // Merge and deduplicate matches
+      const allMatches = [...matches.matches, ...closestMatches];
+      const uniqueMatches = Array.from(new Map(allMatches.map(item => [item._id, item])).values());
+
+      // Sort by match score if available, otherwise by color distance
+      uniqueMatches.sort((a, b) => {
+        if (a.matchScore && b.matchScore) {
+          return b.matchScore - a.matchScore;
+        }
+        return 0;
+      });
+
+      setClosestBalloons(uniqueMatches);
       setShowMatches(true);
       setMessage('Found matching balloons!');
     } catch (error) {
