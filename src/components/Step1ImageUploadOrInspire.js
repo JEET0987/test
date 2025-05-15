@@ -229,22 +229,6 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     return result;
   }
 
-  // Update the balloon mapping to preserve original case
-  const mapped = data.map(item => ({
-    _id: item._id,
-    brand: item.brand,
-    color: item.singleColour,
-    hex: normalizeHex(item.singleHex),
-    image: item.balloonImage,
-    newColour: item.newColour,
-    mixedColourTitle: item.mixedColourTitle,
-    mixedHex: normalizeHex(item.mixedHex),
-    outsideColour: item.outsideColour,
-    outsideHex: normalizeHex(item.outsideHex),
-    insideColour: item.insideColour,
-    insideHex: normalizeHex(item.insideHex)
-  }));
-
   // Update the handleCanvasMouseMove function to use uppercase hex
   const handleCanvasMouseMove = (e) => {
     try {
