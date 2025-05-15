@@ -65,13 +65,26 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImageSrc(e.target.result);
-        setSelectedColor(null);
-        setMessage('Image uploaded successfully! Click on the image to select a color.');
-      };
-      reader.readAsDataURL(file);
+      try {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            setImageSrc(e.target.result);
+            setSelectedColor(null);
+            setMessage('Image uploaded successfully! Click on the image to select a color.');
+          } catch (error) {
+            console.error('Error setting image source:', error);
+            setMessage('Error processing image. Please try another image.');
+          }
+        };
+        reader.onerror = () => {
+          setMessage('Error reading file. Please try another image.');
+        };
+        reader.readAsDataURL(file);
+      } catch (error) {
+        console.error('Error in handleImageUpload:', error);
+        setMessage('Error uploading image. Please try again.');
+      }
     }
   };
 
@@ -102,12 +115,31 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
   };
 
   const handleImageClick = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!imageSrc) return;
-    setSelectedColor(hoveredColor);
-    setLocalSelectedColor(hoveredColor);
-    setMessage(`Selected color: ${hoveredColor}`);
+    try {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!imageSrc || !canvasRef.current) return;
+      
+      const canvas = canvasRef.current;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+      
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      
+      const imageData = ctx.getImageData(Math.floor(x), Math.floor(y), 1, 1).data;
+      const hex = rgbToHex(imageData[0], imageData[1], imageData[2]);
+      
+      setSelectedColor(hex);
+      setLocalSelectedColor(hex);
+      setMessage(`Selected color: ${hex}`);
+    } catch (error) {
+      console.error('Error in handleImageClick:', error);
+      setMessage('Error selecting color. Please try again.');
+    }
   };
 
   const rgbToHex = (r, g, b) => {
@@ -119,23 +151,43 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
 
   useEffect(() => {
     if (imageSrc && canvasRef.current) {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext('2d');
-        
-        // Set canvas dimensions to match image
-        canvas.width = img.width;
-        canvas.height = img.height;
-        
-        // Draw image at full resolution
-        ctx.drawImage(img, 0, 0);
-        
-        // Store the scale factor for later use
-        canvas.dataset.scaleX = canvas.width / canvas.offsetWidth;
-        canvas.dataset.scaleY = canvas.height / canvas.offsetHeight;
-      };
-      img.src = imageSrc;
+      try {
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const canvas = canvasRef.current;
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+              console.error('Could not get canvas context');
+              return;
+            }
+            
+            // Set canvas dimensions to match image
+            canvas.width = img.width;
+            canvas.height = img.height;
+            
+            // Draw image at full resolution
+            ctx.drawImage(img, 0, 0);
+            
+            // Store the scale factor for later use
+            canvas.dataset.scaleX = canvas.width / canvas.offsetWidth;
+            canvas.dataset.scaleY = canvas.height / canvas.offsetHeight;
+          } catch (error) {
+            console.error('Error in canvas drawing:', error);
+            setMessage('Error processing image. Please try another image.');
+          }
+        };
+        img.onerror = () => {
+          console.error('Error loading image');
+          setMessage('Error loading image. Please try another image.');
+        };
+        img.src = imageSrc;
+      } catch (error) {
+        console.error('Error in image loading effect:', error);
+        setMessage('Error processing image. Please try another image.');
+      }
     }
   }, [imageSrc]);
 
@@ -227,20 +279,33 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
   const MAGNIFIER_ZOOM = 3;
 
   const handleCanvasMouseMove = (e) => {
-    if (!canvasRef.current) return;
-    const canvas = canvasRef.current;
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    const x = (e.clientX - rect.left) * scaleX;
-    const y = (e.clientY - rect.top) * scaleY;
-    setMagnifierPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-    // Get color under cursor
-    const ctx = canvas.getContext('2d');
-    const imageData = ctx.getImageData(Math.floor(x), Math.floor(y), 1, 1).data;
-    const hex = rgbToHex(imageData[0], imageData[1], imageData[2]);
-    setMagnifierColor(hex);
-    setHoveredColor(hex);
+    try {
+      if (!canvasRef.current) return;
+      const canvas = canvasRef.current;
+      const rect = canvas.getBoundingClientRect();
+      
+      // Calculate the correct scale factors
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      
+      // Calculate the position relative to the canvas
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+      
+      // Update magnifier position
+      setMagnifierPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+      
+      // Get color under cursor
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      
+      const imageData = ctx.getImageData(Math.floor(x), Math.floor(y), 1, 1).data;
+      const hex = rgbToHex(imageData[0], imageData[1], imageData[2]);
+      setMagnifierColor(hex);
+      setHoveredColor(hex);
+    } catch (error) {
+      console.error('Error in handleCanvasMouseMove:', error);
+    }
   };
 
   const handleCanvasMouseEnter = () => setMagnifierVisible(true);
