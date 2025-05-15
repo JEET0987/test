@@ -162,10 +162,9 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
 
   // Fetch balloons from backend
   useEffect(() => {
-    fetch('/api/auth/products')
+    fetch('https://balloon-backend.vercel.app/api/auth/products')
       .then(res => res.json())
       .then(data => {
-        // Map backend fields to frontend fields
         const mapped = data.map(item => ({
           _id: item._id,
           brand: item.brand,
