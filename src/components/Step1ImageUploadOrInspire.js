@@ -285,16 +285,27 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
         }
         
         const mapped = data.map(item => {
-          // Log any items with missing required fields
-          if (!item.brand || !item.singleHex) {
-            console.log('Item missing required fields:', item);
+          // Log the structure of the first few items to understand the data format
+          if (data.indexOf(item) < 2) {
+            console.log('Sample item structure:', item);
           }
+          
+          // Check if the item has the required fields
+          if (!item.brand || !item.singleHex) {
+            console.log('Item missing required fields:', {
+              brand: item.brand,
+              singleHex: item.singleHex,
+              item: item
+            });
+            return null;
+          }
+          
           return {
             _id: item._id,
-            brand: item.brand || 'Unknown',
-            color: item.singleColour,
+            brand: item.brand,
+            color: item.singleColour || item.color,
             hex: normalizeHex(item.singleHex),
-            image: item.balloonImage,
+            image: item.balloonImage || item.image,
             newColour: item.newColour,
             mixedColourTitle: item.mixedColourTitle,
             mixedHex: normalizeHex(item.mixedHex),
@@ -303,10 +314,17 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
             insideColour: item.insideColour,
             insideHex: normalizeHex(item.insideHex)
           };
-        }).filter(item => item.hex && item.brand); // Filter out items with missing hex or brand
+        }).filter(Boolean); // Remove null items
         
         console.log('Processed balloon data sample:', mapped.slice(0, 2));
         console.log('Total valid balloons:', mapped.length);
+        
+        if (mapped.length === 0) {
+          console.error('No valid balloons found in the data');
+          setMessage('Error: No valid balloon data found. Please try again later.');
+          return;
+        }
+        
         setBalloons(mapped);
       } catch (error) {
         console.error('Error fetching balloons:', error);
@@ -372,6 +390,11 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     console.log('Valid balloons processed:', validBalloons);
     console.log('Grouped balloons by brand:', Object.keys(grouped).length);
     console.log('Brands found:', Object.keys(grouped));
+    
+    if (validBalloons === 0) {
+      console.error('No valid balloons to process');
+      return [];
+    }
     
     const closest = [];
     Object.entries(grouped).forEach(([brand, arr]) => {
