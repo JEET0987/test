@@ -1,6 +1,6 @@
 import { OpenAI } from '@langchain/openai';
 import { PromptTemplate } from '@langchain/core/prompts';
-import { LLMChain } from '@langchain/core/chains/llm_chain';
+import { LLMChain } from '@langchain/core/chains';
 
 class ColorMatchingService {
   constructor() {
