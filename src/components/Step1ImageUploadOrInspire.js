@@ -216,11 +216,30 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
   useEffect(() => {
     const fetchBalloons = async () => {
       try {
-        const response = await fetch('https://balloon-backend.vercel.app/api/auth/products');
+        console.log('Fetching balloons from Vercel...');
+        const response = await fetch('https://balloon-backend.vercel.app/api/auth/products', {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          mode: 'cors',
+          credentials: 'include'
+        });
+        
+        console.log('Response status:', response.status);
+        
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
+        
         const data = await response.json();
+        console.log('Fetched balloon data:', data);
+        
+        if (!Array.isArray(data)) {
+          throw new Error('Invalid data format received from server');
+        }
+        
         const mapped = data.map(item => ({
           _id: item._id,
           brand: item.brand,
@@ -228,6 +247,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
           hex: item.singleHex,
           image: item.balloonImage
         }));
+        console.log('Mapped balloons:', mapped);
         setBalloons(mapped);
       } catch (error) {
         console.error('Error fetching balloons:', error);
@@ -309,16 +329,18 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
       
       // If balloons are not loaded yet, try to fetch them
       if (balloons.length === 0) {
-        console.log('Fetching balloons from API...');
+        console.log('Fetching balloons from Vercel...');
         const response = await fetch('https://balloon-backend.vercel.app/api/auth/products', {
           method: 'GET',
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
-          }
+          },
+          mode: 'cors',
+          credentials: 'include'
         });
         
-        console.log('API Response status:', response.status);
+        console.log('Response status:', response.status);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -326,6 +348,10 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
         
         const data = await response.json();
         console.log('API Response data:', data);
+        
+        if (!Array.isArray(data)) {
+          throw new Error('Invalid data format received from server');
+        }
         
         const mapped = data.map(item => ({
           _id: item._id,

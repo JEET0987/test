@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://balloon-backend.vercel.app';
 
 async function request(endpoint, method = 'GET', data) {
   const config = {
