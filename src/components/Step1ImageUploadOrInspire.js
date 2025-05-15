@@ -278,27 +278,35 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
         }
         
         const data = await response.json();
-        console.log('Fetched balloon data:', data);
+        console.log('Raw balloon data sample:', data.slice(0, 2));
         
         if (!Array.isArray(data)) {
           throw new Error('Invalid data format received from server');
         }
         
-        const mapped = data.map(item => ({
-          _id: item._id,
-          brand: item.brand,
-          color: item.singleColour,
-          hex: normalizeHex(item.singleHex),
-          image: item.balloonImage,
-          newColour: item.newColour,
-          mixedColourTitle: item.mixedColourTitle,
-          mixedHex: normalizeHex(item.mixedHex),
-          outsideColour: item.outsideColour,
-          outsideHex: normalizeHex(item.outsideHex),
-          insideColour: item.insideColour,
-          insideHex: normalizeHex(item.insideHex)
-        }));
-        console.log('Mapped balloons:', mapped);
+        const mapped = data.map(item => {
+          // Log any items with missing required fields
+          if (!item.brand || !item.singleHex) {
+            console.log('Item missing required fields:', item);
+          }
+          return {
+            _id: item._id,
+            brand: item.brand || 'Unknown',
+            color: item.singleColour,
+            hex: normalizeHex(item.singleHex),
+            image: item.balloonImage,
+            newColour: item.newColour,
+            mixedColourTitle: item.mixedColourTitle,
+            mixedHex: normalizeHex(item.mixedHex),
+            outsideColour: item.outsideColour,
+            outsideHex: normalizeHex(item.outsideHex),
+            insideColour: item.insideColour,
+            insideHex: normalizeHex(item.insideHex)
+          };
+        }).filter(item => item.hex && item.brand); // Filter out items with missing hex or brand
+        
+        console.log('Processed balloon data sample:', mapped.slice(0, 2));
+        console.log('Total valid balloons:', mapped.length);
         setBalloons(mapped);
       } catch (error) {
         console.error('Error fetching balloons:', error);
@@ -349,13 +357,21 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     
     // Group balloons by brand
     const grouped = {};
+    let validBalloons = 0;
+    
     balloons.forEach(balloon => {
-      if (!balloon.brand) return;
+      if (!balloon.brand || !balloon.hex) {
+        console.log('Invalid balloon data:', balloon);
+        return;
+      }
+      validBalloons++;
       if (!grouped[balloon.brand]) grouped[balloon.brand] = [];
       grouped[balloon.brand].push(balloon);
     });
     
+    console.log('Valid balloons processed:', validBalloons);
     console.log('Grouped balloons by brand:', Object.keys(grouped).length);
+    console.log('Brands found:', Object.keys(grouped));
     
     const closest = [];
     Object.entries(grouped).forEach(([brand, arr]) => {
