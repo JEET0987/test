@@ -311,12 +311,28 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
 
   // Update the color distance calculation to work with both cases
   function colorDistance(rgb1, rgb2) {
+    // Using weighted Euclidean distance for better color perception
+    const rMean = (rgb1[0] + rgb2[0]) / 2;
+    const r = rgb1[0] - rgb2[0];
+    const g = rgb1[1] - rgb2[1];
+    const b = rgb1[2] - rgb2[2];
+    
+    const weightR = 2 + rMean / 256;
+    const weightG = 4;
+    const weightB = 2 + (255 - rMean) / 256;
+    
     const distance = Math.sqrt(
-      Math.pow(rgb1[0] - rgb2[0], 2) +
-      Math.pow(rgb1[1] - rgb2[1], 2) +
-      Math.pow(rgb1[2] - rgb2[2], 2)
+      weightR * r * r +
+      weightG * g * g +
+      weightB * b * b
     );
-    console.log('Color distance:', distance);
+    
+    console.log('Color distance calculation:', {
+      rgb1,
+      rgb2,
+      distance
+    });
+    
     return distance;
   }
 
@@ -331,6 +347,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     const selectedRgb = hexToRgbArr(normalizeHex(selectedHex));
     console.log('Selected RGB:', selectedRgb);
     
+    // Group balloons by brand
     const grouped = {};
     balloons.forEach(balloon => {
       if (!balloon.brand) return;
@@ -338,12 +355,13 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
       grouped[balloon.brand].push(balloon);
     });
     
-    console.log('Grouped balloons:', grouped);
+    console.log('Grouped balloons by brand:', Object.keys(grouped).length);
     
     const closest = [];
     Object.entries(grouped).forEach(([brand, arr]) => {
       let minDist = Infinity;
       let best = null;
+      
       arr.forEach(balloon => {
         if (!balloon.hex) return;
         const balloonRgb = hexToRgbArr(normalizeHex(balloon.hex));
@@ -353,10 +371,21 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
           best = balloon;
         }
       });
-      if (best) closest.push(best);
+      
+      if (best) {
+        console.log(`Best match for ${brand}:`, best.hex, 'Distance:', minDist);
+        closest.push(best);
+      }
     });
     
-    console.log('Closest matches:', closest);
+    // Sort by color distance
+    closest.sort((a, b) => {
+      const distA = colorDistance(selectedRgb, hexToRgbArr(normalizeHex(a.hex)));
+      const distB = colorDistance(selectedRgb, hexToRgbArr(normalizeHex(b.hex)));
+      return distA - distB;
+    });
+    
+    console.log('Closest matches:', closest.length);
     return closest;
   }
 
