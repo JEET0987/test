@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 // import Header from './Header';
-import Footer from './Footer';
+// Removed unused Footer import
 import { Link } from 'react-router-dom';
 
 function LoginPage() {
@@ -71,9 +71,12 @@ function LoginPage() {
             </div>
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:scale-105 hover:shadow-2xl transition-all duration-300 border-2 border-purple-500/40"
+              disabled={loading}
+              className={`w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-full font-bold text-lg shadow-xl transition-all duration-300 border-2 border-purple-500/40 ${
+                loading ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 hover:shadow-2xl'
+              }`}
             >
-              Login
+              {loading ? 'Logging in...' : 'Login'}
             </button>
           </form>
           <p className="mt-6 text-gray-300">
@@ -90,3 +93,4 @@ function LoginPage() {
 }
 
 export default LoginPage;
+
