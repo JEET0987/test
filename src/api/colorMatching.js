@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'https://balloon-backend.vercel.app/api/auth';
+const API_BASE_URL = 'https://balloon-backend.vercel.app/api';
 
 export const findMatchingColors = async (selectedColor, threshold = 50) => {
   try {
