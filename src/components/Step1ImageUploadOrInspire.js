@@ -1,7 +1,8 @@
+// Commit test: minimal change to allow git commit
 import React, { useState, useRef, useEffect } from 'react';
 import Header from './Header';
 import Footer from './Footer';
-import colorMatchingService from '../services/colorMatchingService';
+
 
 const inspirationColors = [
   // Warm Colors
