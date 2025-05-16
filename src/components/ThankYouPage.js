@@ -28,14 +28,14 @@ const ThankYouPage = () => {
             <p className="text-gray-300">Estimated Delivery: 3-5 business days</p>
           </div>
           <button
-            onClick={() => navigate('/')}
+            onClick={handleReturnHome}
             className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300 border border-purple-500/40"
           >
             Return to Home
           </button>
         </div>
       </div>
-      
+      <Footer />
     </div>
   );
 };

@@ -366,6 +366,7 @@ const Step4ProductDisplay = ({ selectedTheme = 'Default', onNext }) => {
               Continue
             </button>
           )}
+          <button onClick={() => navigate('/')} className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg">Go Home</button>
         </div>
       </div>
       

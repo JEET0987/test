@@ -90,7 +90,7 @@ const Step3EventDescription = ({ onSubmit, selectedColor, userType }) => {
           </form>
         </div>
       </div>
-      
+      <Footer />
     </div>
   );
 };

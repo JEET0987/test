@@ -234,108 +234,117 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
       <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 md:p-12 lg:p-16 min-h-[80vh]">
         <div className="w-full max-w-4xl mx-auto bg-gray-800/80 backdrop-blur-lg rounded-3xl shadow-2xl p-6 sm:p-10 border border-purple-500/20">
           <div className="mb-6 text-2xl font-bold text-white">Color Picker Tool</div>
+          {/* Show message if present */}
+          {message && <div className="mb-4 text-center text-red-400 font-semibold">{message}</div>}
           <div className="flex flex-col md:flex-row gap-8 items-start justify-center">
-            {/* Left: Upload or Image */}
+            {/* Left: Upload or Image with drag-and-drop */}
             <div className="flex flex-col items-center w-full md:w-1/2">
-              {!imageSrc ? (
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-64 h-64 flex flex-col items-center justify-center border-2 border-dashed border-purple-400 rounded-2xl bg-gray-900/60 hover:bg-purple-900/40 transition-colors text-purple-200 text-lg font-semibold mb-4"
-                >
-                  <span className="text-4xl mb-2">📤</span>
-                  Click to upload image
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                    ref={fileInputRef}
-                  />
-                </button>
-              ) : (
-                <div className="relative w-64 h-64">
-                  <img
-                    src={imageSrc}
-                    alt="Uploaded"
-                    className="w-64 h-64 object-cover rounded-xl border border-purple-200 mb-2 absolute top-0 left-0 z-0"
-                  />
-                  <canvas
-                    ref={canvasRef}
-                    onClick={handleImageClick}
-                    onMouseMove={handleCanvasMouseMove}
-                    onMouseEnter={handleCanvasMouseEnter}
-                    onMouseLeave={handleCanvasMouseLeave}
-                    width={256}
-                    height={256}
-                    className="w-64 h-64 rounded-xl cursor-crosshair absolute top-0 left-0 z-10"
-                    style={{ pointerEvents: 'auto', background: 'transparent' }}
-                  />
-                  {magnifierVisible && (
-                    <div
-                      style={{
-                        position: 'absolute',
-                        left: Math.max(0, Math.min(magnifierPos.x + 20, 256 - MAGNIFIER_SIZE)),
-                        top: Math.max(0, Math.min(magnifierPos.y - MAGNIFIER_SIZE / 2, 256 - MAGNIFIER_SIZE)),
-                        width: MAGNIFIER_SIZE,
-                        height: MAGNIFIER_SIZE,
-                        pointerEvents: 'none',
-                        border: '2px solid #a78bfa',
-                        borderRadius: '50%',
-                        overflow: 'hidden',
-                        boxShadow: '0 2px 8px rgba(80,0,80,0.15)',
-                        zIndex: 20,
-                        background: '#fff',
-                      }}
-                    >
-                      <canvas
-                        width={MAGNIFIER_SIZE}
-                        height={MAGNIFIER_SIZE}
-                        ref={el => {
-                          if (!el || !canvasRef.current) return;
-                          const ctx = el.getContext('2d');
-                          const mainCanvas = canvasRef.current;
-                          const mainCtx = mainCanvas.getContext('2d');
-                          const { x, y } = magnifierPos;
-                          const scaleX = mainCanvas.width / 256;
-                          const scaleY = mainCanvas.height / 256;
-                          const sx = (x * scaleX) - MAGNIFIER_SIZE / (2 * MAGNIFIER_ZOOM);
-                          const sy = (y * scaleY) - MAGNIFIER_SIZE / (2 * MAGNIFIER_ZOOM);
-                          ctx.clearRect(0, 0, MAGNIFIER_SIZE, MAGNIFIER_SIZE);
-                          ctx.save();
-                          ctx.beginPath();
-                          ctx.arc(MAGNIFIER_SIZE/2, MAGNIFIER_SIZE/2, MAGNIFIER_SIZE/2, 0, 2 * Math.PI);
-                          ctx.clip();
-                          ctx.drawImage(
-                            mainCanvas,
-                            sx,
-                            sy,
-                            MAGNIFIER_SIZE / MAGNIFIER_ZOOM,
-                            MAGNIFIER_SIZE / MAGNIFIER_ZOOM,
-                            0,
-                            0,
-                            MAGNIFIER_SIZE,
-                            MAGNIFIER_SIZE
-                          );
-                          ctx.restore();
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`w-64 h-64 flex flex-col items-center justify-center border-2 border-dashed rounded-2xl mb-4 transition-colors ${isDragging ? 'border-purple-600 bg-purple-900/40' : 'border-purple-400 bg-gray-900/60'}`}
+                style={{ position: 'relative' }}
+              >
+                {!imageSrc ? (
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex flex-col items-center justify-center text-purple-200 text-lg font-semibold w-full h-full"
+                  >
+                    <span className="text-4xl mb-2">📤</span>
+                    Click to upload image
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      ref={fileInputRef}
+                    />
+                  </button>
+                ) : (
+                  <div className="relative w-full h-full">
+                    <img
+                      src={imageSrc}
+                      alt="Uploaded"
+                      className="w-full h-full object-cover rounded-xl border border-purple-200 mb-2 absolute top-0 left-0 z-0"
+                    />
+                    <canvas
+                      ref={canvasRef}
+                      onClick={handleImageClick}
+                      onMouseMove={handleCanvasMouseMove}
+                      onMouseEnter={handleCanvasMouseEnter}
+                      onMouseLeave={handleCanvasMouseLeave}
+                      width={256}
+                      height={256}
+                      className="w-full h-full rounded-xl cursor-crosshair absolute top-0 left-0 z-10"
+                      style={{ pointerEvents: 'auto', background: 'transparent' }}
+                    />
+                    {magnifierVisible && (
+                      <div
+                        style={{
+                          position: 'absolute',
+                          left: Math.max(0, Math.min(magnifierPos.x + 20, 256 - MAGNIFIER_SIZE)),
+                          top: Math.max(0, Math.min(magnifierPos.y - MAGNIFIER_SIZE / 2, 256 - MAGNIFIER_SIZE)),
+                          width: MAGNIFIER_SIZE,
+                          height: MAGNIFIER_SIZE,
+                          pointerEvents: 'none',
+                          border: '2px solid #a78bfa',
+                          borderRadius: '50%',
+                          overflow: 'hidden',
+                          boxShadow: '0 2px 8px rgba(80,0,80,0.15)',
+                          zIndex: 20,
+                          background: '#fff',
                         }}
-                        style={{ width: MAGNIFIER_SIZE, height: MAGNIFIER_SIZE, display: 'block' }}
-                      />
-                      <div style={{
-                        position: 'absolute',
-                        bottom: 4,
-                        left: 0,
-                        width: '100%',
-                        textAlign: 'center',
-                        fontSize: 12,
-                        color: '#333',
-                        background: 'rgba(255,255,255,0.7)',
-                        borderRadius: 8,
-                        padding: '2px 0',
-                      }}>{magnifierColor}</div>
-                    </div>
-                  )}
-                </div>
-              )}
+                      >
+                        <canvas
+                          width={MAGNIFIER_SIZE}
+                          height={MAGNIFIER_SIZE}
+                          ref={el => {
+                            if (!el || !canvasRef.current) return;
+                            const ctx = el.getContext('2d');
+                            const mainCanvas = canvasRef.current;
+                            const { x, y } = magnifierPos;
+                            const scaleX = mainCanvas.width / 256;
+                            const scaleY = mainCanvas.height / 256;
+                            const sx = (x * scaleX) - MAGNIFIER_SIZE / (2 * MAGNIFIER_ZOOM);
+                            const sy = (y * scaleY) - MAGNIFIER_SIZE / (2 * MAGNIFIER_ZOOM);
+                            ctx.clearRect(0, 0, MAGNIFIER_SIZE, MAGNIFIER_SIZE);
+                            ctx.save();
+                            ctx.beginPath();
+                            ctx.arc(MAGNIFIER_SIZE/2, MAGNIFIER_SIZE/2, MAGNIFIER_SIZE/2, 0, 2 * Math.PI);
+                            ctx.clip();
+                            ctx.drawImage(
+                              mainCanvas,
+                              sx,
+                              sy,
+                              MAGNIFIER_SIZE / MAGNIFIER_ZOOM,
+                              MAGNIFIER_SIZE / MAGNIFIER_ZOOM,
+                              0,
+                              0,
+                              MAGNIFIER_SIZE,
+                              MAGNIFIER_SIZE
+                            );
+                            ctx.restore();
+                          }}
+                          style={{ width: MAGNIFIER_SIZE, height: MAGNIFIER_SIZE, display: 'block' }}
+                        />
+                        <div style={{
+                          position: 'absolute',
+                          bottom: 4,
+                          left: 0,
+                          width: '100%',
+                          textAlign: 'center',
+                          fontSize: 12,
+                          color: '#333',
+                          background: 'rgba(255,255,255,0.7)',
+                          borderRadius: 8,
+                          padding: '2px 0',
+                        }}>{magnifierColor}</div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
               {/* Color display box */}
               {(magnifierVisible ? hoveredColor : localSelectedColor) && (
                 <div className="mt-2 flex flex-col items-center z-20">
@@ -348,6 +357,31 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
                   </div>
                 </div>
               )}
+              {/* Color category filter and swatches */}
+              <div className="mt-4 w-full">
+                <div className="flex gap-2 mb-2 justify-center">
+                  {categories.map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => setActiveCategory(cat)}
+                      className={`px-3 py-1 rounded-lg font-bold text-sm ${activeCategory === cat ? 'bg-purple-600 text-white' : 'bg-gray-700 text-purple-200'}`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {filteredColors.map(color => (
+                    <div
+                      key={color.hex}
+                      onClick={() => handleColorSelect(color.hex)}
+                      className="w-8 h-8 rounded-full cursor-pointer border-2 border-white hover:scale-110 transition"
+                      style={{ backgroundColor: color.hex }}
+                      title={color.name}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
             {/* Right: Instructions */}
             <div className="flex-1 flex flex-col items-center md:items-start bg-gray-800/80 backdrop-blur-lg rounded-3xl shadow-2xl p-6 border border-purple-500/20 min-h-[300px]">
@@ -373,6 +407,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
