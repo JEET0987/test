@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import Footer from './Footer';
-import Header from './Header';
 
 const CheckoutPage = ({ onBack }) => {
   const navigate = useNavigate();
