@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { findMatchingColors } from '../utils/colorMatching';
+import { findMatchingColors } from '../api/colorMatching';
 
 const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) => {
   const [imageSrc, setImageSrc] = useState(null);
@@ -22,12 +22,17 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     setMatchRequested(false);
   }, [selectedColor]);
 
-  const handleFindMatches = () => {
+  const handleFindMatches = async () => {
     if (localSelectedColor) {
-      const matches = findMatchingColors(localSelectedColor);
-      setMatchingBalloons(matches);
-      setShowMatches(true);
-      setMatchRequested(true);
+      try {
+        const matches = await findMatchingColors(localSelectedColor);
+        setMatchingBalloons(matches);
+        setShowMatches(true);
+        setMatchRequested(true);
+      } catch (error) {
+        console.error('Error finding matches:', error);
+        // You might want to show an error message to the user here
+      }
     }
   };
 
@@ -346,15 +351,15 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {Object.entries(matchingBalloons).map(([brand, balloon]) => (
                   <div key={brand} className="bg-gray-700/50 rounded-xl p-4 border border-purple-500/20">
-                    <h4 className="text-lg font-semibold text-purple-200 mb-3">{brand}</h4>
+                    <h4 className="text-lg font-semibold text-purple-200 mb-3">{balloon["Brand"]}</h4>
                     <div className="flex flex-col items-center">
                       <img
                         src={balloon["Balloon Image"]}
-                        alt={balloon["Single Colour "]}
+                        alt={balloon["Single Colour"]}
                         className="w-24 h-24 object-contain rounded-lg bg-white/10 p-2"
                       />
-                      <span className="text-sm text-white mt-2">{balloon["Single Colour "]}</span>
-                      <span className="text-xs text-purple-300 mt-1">Distance: {Math.round(balloon.distance)}</span>
+                      <span className="text-sm text-white mt-2">{balloon["Single Colour"]}</span>
+                      <span className="text-xs text-purple-300 mt-1">Color: {balloon["New Colour"]}</span>
                     </div>
                   </div>
                 ))}
