@@ -35,7 +35,5 @@
       "dest": "/index.html"
     }
   ],
-  "env": {
-    "REACT_APP_OPENAI_API_KEY": "@react_app_openai_api_key"
   }
 }
