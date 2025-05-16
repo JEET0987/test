@@ -15,6 +15,8 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
   const [matchingBalloons, setMatchingBalloons] = useState({});
   const [showMatches, setShowMatches] = useState(false);
   const [matchRequested, setMatchRequested] = useState(false);
+  const [colorAnalysis, setColorAnalysis] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   useEffect(() => {
     setLocalSelectedColor(selectedColor);
@@ -25,13 +27,17 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
   const handleFindMatches = async () => {
     if (localSelectedColor) {
       try {
-        const matches = await findMatchingColors(localSelectedColor);
-        setMatchingBalloons(matches);
+        setIsAnalyzing(true);
+        const response = await findMatchingColors(localSelectedColor);
+        setMatchingBalloons(response.matches);
+        setColorAnalysis(response.colorAnalysis);
         setShowMatches(true);
         setMatchRequested(true);
       } catch (error) {
         console.error('Error finding matches:', error);
         // You might want to show an error message to the user here
+      } finally {
+        setIsAnalyzing(false);
       }
     }
   };
@@ -344,14 +350,60 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
             </div>
           </div>
 
+          {/* Color Analysis Section */}
+          {colorAnalysis && (
+            <div className="mt-8 bg-gray-800/80 backdrop-blur-lg rounded-xl p-6 border border-purple-500/20">
+              <h3 className="text-xl font-bold text-white mb-4">Color Theory Analysis</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Object.entries(colorAnalysis).map(([relationship, colors]) => (
+                  <div key={relationship} className="bg-gray-700/50 rounded-xl p-4 border border-purple-500/20">
+                    <h4 className="text-lg font-semibold text-purple-200 mb-3 capitalize">
+                      {relationship.replace(/([A-Z])/g, ' $1').trim()}
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {Array.isArray(colors) ? colors.map((color, index) => (
+                        <div
+                          key={index}
+                          className="w-8 h-8 rounded-full border-2 border-purple-200"
+                          style={{ backgroundColor: color }}
+                          title={color}
+                        />
+                      )) : (
+                        <div
+                          className="w-8 h-8 rounded-full border-2 border-purple-200"
+                          style={{ backgroundColor: colors }}
+                          title={colors}
+                        />
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Matching Balloons Section */}
           {matchRequested && showMatches && Object.keys(matchingBalloons).length > 0 && (
             <div className="mt-8">
               <h3 className="text-xl font-bold text-white mb-4">Nearest Matching Balloons</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {Object.entries(matchingBalloons).map(([brand, balloon]) => (
-                  <div key={brand} className="bg-gray-700/50 rounded-xl p-4 border border-purple-500/20">
-                    <h4 className="text-lg font-semibold text-purple-200 mb-3">{balloon["Brand"]}</h4>
+                  <div 
+                    key={brand} 
+                    className={`bg-gray-700/50 rounded-xl p-4 border ${
+                      balloon.isSuggestedColor 
+                        ? 'border-pink-500/40' 
+                        : 'border-purple-500/20'
+                    }`}
+                  >
+                    <div className="flex justify-between items-center mb-3">
+                      <h4 className="text-lg font-semibold text-purple-200">{balloon["Brand"]}</h4>
+                      {balloon.isSuggestedColor && (
+                        <span className="text-xs bg-pink-500/20 text-pink-200 px-2 py-1 rounded-full">
+                          AI Suggested
+                        </span>
+                      )}
+                    </div>
                     <div className="flex flex-col items-center">
                       <img
                         src={balloon["Balloon Image"]}
@@ -363,6 +415,16 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Loading State */}
+          {isAnalyzing && (
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+              <div className="bg-gray-800 rounded-xl p-6 border border-purple-500/20">
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent mx-auto"></div>
+                <p className="text-white mt-4 text-center">Analyzing colors with AI...</p>
               </div>
             </div>
           )}
