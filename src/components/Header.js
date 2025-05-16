@@ -26,6 +26,10 @@ const Header = () => {
     }
   };
 
+  const toggleCart = () => {
+    setIsCartOpen(!isCartOpen);
+  };
+
   return (
     <header className="bg-gray-800/90 backdrop-blur-lg border-b border-purple-500/20 sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4">
@@ -90,6 +94,38 @@ const Header = () => {
                 </Link>
               </div>
             )}
+            <div className="relative">
+              <button
+                onClick={toggleCart}
+                className="relative text-gray-300 hover:text-purple-300 transition-colors focus:outline-none"
+                aria-label="Toggle cart"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m5-9v9m4-9v9m4-9l2 9"
+                  />
+                </svg>
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-pink-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                    {cartItemCount}
+                  </span>
+                )}
+              </button>
+              {isCartOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-gray-700 text-white rounded-md shadow-lg p-4 z-50">
+                  <p>Cart is open. Items: {cartItemCount}</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
