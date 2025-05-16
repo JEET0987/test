@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { findMatchingColors } from '../utils/colorMatching';
 
 const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) => {
   const [imageSrc, setImageSrc] = useState(null);
@@ -11,10 +12,24 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
   const [hoveredColor, setHoveredColor] = useState('#ffffff');
   const [secondColor, setSecondColor] = useState(null);
   const [selectingSecond, setSelectingSecond] = useState(false);
+  const [matchingBalloons, setMatchingBalloons] = useState({});
+  const [showMatches, setShowMatches] = useState(false);
+  const [matchRequested, setMatchRequested] = useState(false);
 
   useEffect(() => {
     setLocalSelectedColor(selectedColor);
+    setShowMatches(false);
+    setMatchRequested(false);
   }, [selectedColor]);
+
+  const handleFindMatches = () => {
+    if (localSelectedColor) {
+      const matches = findMatchingColors(localSelectedColor);
+      setMatchingBalloons(matches);
+      setShowMatches(true);
+      setMatchRequested(true);
+    }
+  };
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -308,12 +323,44 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
                   <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full px-3 py-1 text-sm font-bold shadow">2</span>
                   <span className="text-white font-semibold">Click on the image to pick a color</span>
                 </div>
+                {/* Find Match Button */}
+                {localSelectedColor && (
+                  <button
+                    className="mt-2 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-2 rounded-lg font-bold shadow-xl border-2 border-purple-500/40 hover:scale-105 hover:shadow-2xl transition focus:outline-none w-fit"
+                    onClick={handleFindMatches}
+                  >
+                    Find Matching Balloons
+                  </button>
+                )}
               </div>
               <div className="mt-4 text-xs text-gray-300">
                 Click anywhere on the image to select a color. The color picker will show you the exact color value in both HEX and RGB formats.
               </div>
             </div>
           </div>
+
+          {/* Matching Balloons Section */}
+          {matchRequested && showMatches && Object.keys(matchingBalloons).length > 0 && (
+            <div className="mt-8">
+              <h3 className="text-xl font-bold text-white mb-4">Nearest Matching Balloons</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Object.entries(matchingBalloons).map(([brand, balloon]) => (
+                  <div key={brand} className="bg-gray-700/50 rounded-xl p-4 border border-purple-500/20">
+                    <h4 className="text-lg font-semibold text-purple-200 mb-3">{brand}</h4>
+                    <div className="flex flex-col items-center">
+                      <img
+                        src={balloon["Balloon Image"]}
+                        alt={balloon["Single Colour "]}
+                        className="w-24 h-24 object-contain rounded-lg bg-white/10 p-2"
+                      />
+                      <span className="text-sm text-white mt-2">{balloon["Single Colour "]}</span>
+                      <span className="text-xs text-purple-300 mt-1">Distance: {Math.round(balloon.distance)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

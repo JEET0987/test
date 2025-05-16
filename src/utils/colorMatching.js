@@ -10,14 +10,14 @@ const hexToRgb = (hex) => {
   } : null;
 };
 
-// Calculate color distance using LAB color space
+// Calculate color distance using RGB space
 const calculateColorDistance = (color1, color2) => {
   const rgb1 = hexToRgb(color1);
   const rgb2 = hexToRgb(color2);
   
   if (!rgb1 || !rgb2) return Infinity;
   
-  // Simple Euclidean distance in RGB space
+  // Euclidean distance in RGB space
   return Math.sqrt(
     Math.pow(rgb1.r - rgb2.r, 2) +
     Math.pow(rgb1.g - rgb2.g, 2) +
@@ -27,8 +27,8 @@ const calculateColorDistance = (color1, color2) => {
 
 // Find matching colors
 export const findMatchingColors = (selectedColor, threshold = 50) => {
-  if (!selectedColor) return [];
-  
+  if (!selectedColor) return {};
+
   const matches = balloonColors
     .map(color => ({
       ...color,
@@ -37,15 +37,14 @@ export const findMatchingColors = (selectedColor, threshold = 50) => {
     .filter(match => match.distance <= threshold)
     .sort((a, b) => a.distance - b.distance);
 
-  // Group matches by brand and keep only the nearest match per brand
-  const matchesByBrand = matches.reduce((acc, match) => {
+  // Keep only the nearest match per brand
+  const matchesByBrand = {};
+  for (const match of matches) {
     const brand = match.Brand;
-    if (!acc[brand] || match.distance < acc[brand].distance) {
-      acc[brand] = match;
+    if (!matchesByBrand[brand] || match.distance < matchesByBrand[brand].distance) {
+      matchesByBrand[brand] = match;
     }
-    return acc;
-  }, {});
-
+  }
   return matchesByBrand;
 };
 
