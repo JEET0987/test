@@ -37,26 +37,17 @@ const inspirationColors = [
 ];
 
 const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) => {
-  const [mode, setMode] = useState(null);
   const [imageSrc, setImageSrc] = useState(null);
   const [message, setMessage] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const [activeCategory, setActiveCategory] = useState('All');
   const [localSelectedColor, setLocalSelectedColor] = useState(null);
   const canvasRef = useRef(null);
-  const imageRef = useRef(null);
-  const dropZoneRef = useRef(null);
   const fileInputRef = useRef(null);
-  const [showResultLayout, setShowResultLayout] = useState(false);
   const [magnifierVisible, setMagnifierVisible] = useState(false);
   const [magnifierPos, setMagnifierPos] = useState({ x: 0, y: 0 });
   const [magnifierColor, setMagnifierColor] = useState('#ffffff');
   const [hoveredColor, setHoveredColor] = useState('#ffffff');
-  const [secondColor, setSecondColor] = useState(null);
-  const [selectingSecond, setSelectingSecond] = useState(false);
-  const [balloons, setBalloons] = useState([]);
-  const [closestBalloons, setClosestBalloons] = useState([]);
-  const [showMatches, setShowMatches] = useState(false);
 
   const categories = ['All', 'Warm', 'Cool', 'Neutral'];
 
@@ -145,7 +136,6 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
   };
 
   const rgbToHex = (r, g, b) => {
-    // Keep original case from backend
     return '#' + [r, g, b].map(x => {
       const hex = x.toString(16);
       return hex.length === 1 ? '0' + hex : hex;
@@ -167,16 +157,9 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
               return;
             }
             
-            // Set canvas dimensions to match image
             canvas.width = img.width;
             canvas.height = img.height;
-            
-            // Draw image at full resolution
             ctx.drawImage(img, 0, 0);
-            
-            // Store the scale factor for later use
-            canvas.dataset.scaleX = canvas.width / canvas.offsetWidth;
-            canvas.dataset.scaleY = canvas.height / canvas.offsetHeight;
           } catch (error) {
             console.error('Error in canvas drawing:', error);
             setMessage('Error processing image. Please try another image.');
@@ -199,17 +182,9 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     : inspirationColors.filter(color => color.category === activeCategory);
 
   const handleColorSelect = (color) => {
-    console.log('Selecting color:', color);
     setLocalSelectedColor(color);
     setSelectedColor(color);
     setMessage(`Selected color: ${color}`);
-  };
-
-  // Update the color handling functions to work with both cases
-  const normalizeHex = (hex) => {
-    if (!hex) return '';
-    // Just ensure # prefix is present, keep original case
-    return hex.startsWith('#') ? hex : `#${hex}`;
   };
 
   const hexToRgb = (hex) => {
@@ -221,17 +196,10 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     return `${r}, ${g}, ${b}`;
   };
 
-  function hexToRgbArr(hex) {
-    console.log('Converting hex to RGB:', hex);
-    hex = hex.replace('#', '');
-    if (hex.length === 3) hex = hex.split('').map(x => x + x).join('');
-    const num = parseInt(hex, 16);
-    const result = [num >> 16, (num >> 8) & 255, num & 255];
-    console.log('RGB result:', result);
-    return result;
-  }
+  // Magnifier settings
+  const MAGNIFIER_SIZE = 100;
+  const MAGNIFIER_ZOOM = 3;
 
-  // Update the handleCanvasMouseMove function to use uppercase hex
   const handleCanvasMouseMove = (e) => {
     try {
       if (!canvasRef.current) return;
@@ -258,243 +226,6 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     }
   };
 
-  // Fetch balloons from backend
-  useEffect(() => {
-    const fetchBalloons = async () => {
-      try {
-        console.log('Fetching balloons from Vercel...');
-        const response = await fetch('https://balloon-backend.vercel.app/api/auth/products', {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          mode: 'cors',
-          credentials: 'include'
-        });
-        
-        console.log('Response status:', response.status);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log('API Response data:', data);
-        
-        if (!Array.isArray(data)) {
-          throw new Error('Invalid data format received from server');
-        }
-        
-        const mapped = data.map(item => {
-          // Skip items without required fields
-          if (!item.brand || !item.singleHex) {
-            return null;
-          }
-
-          return {
-            _id: item._id,
-            brand: item.brand,
-            color: item.singleColour || item.color || '',
-            hex: normalizeHex(item.singleHex),
-            image: item.balloonImage || item.image || '',
-            newColour: item.newColour || '',
-            mixedColourTitle: item.mixedColourTitle || '',
-            mixedHex: normalizeHex(item.mixedHex || ''),
-            outsideColour: item.outsideColour || '',
-            outsideHex: normalizeHex(item.outsideHex || ''),
-            insideColour: item.insideColour || '',
-            insideHex: normalizeHex(item.insideHex || '')
-          };
-        }).filter(Boolean); // Remove null items
-        
-        console.log('Mapped balloons:', mapped);
-        
-        if (mapped.length === 0) {
-          console.error('No valid balloons found in the data');
-          setMessage('Error: No valid balloon data found. Please try again later.');
-          return;
-        }
-        
-        setBalloons(mapped);
-      } catch (error) {
-        console.error('Error fetching balloons:', error);
-        setMessage('Error loading balloon data. Please try again.');
-        setBalloons([]);
-      }
-    };
-    fetchBalloons();
-  }, []);
-
-  // Update the color distance calculation to work with both cases
-  function colorDistance(rgb1, rgb2) {
-    // Using weighted Euclidean distance for better color perception
-    const rMean = (rgb1[0] + rgb2[0]) / 2;
-    const r = rgb1[0] - rgb2[0];
-    const g = rgb1[1] - rgb2[1];
-    const b = rgb1[2] - rgb2[2];
-    
-    const weightR = 2 + rMean / 256;
-    const weightG = 4;
-    const weightB = 2 + (255 - rMean) / 256;
-    
-    const distance = Math.sqrt(
-      weightR * r * r +
-      weightG * g * g +
-      weightB * b * b
-    );
-    
-    console.log('Color distance calculation:', {
-      rgb1,
-      rgb2,
-      distance
-    });
-    
-    return distance;
-  }
-
-  // Update the findClosestBalloons function
-  function findClosestBalloons(selectedHex) {
-    console.log('Finding closest balloons for color:', selectedHex);
-    if (!selectedHex || balloons.length === 0) {
-      console.log('No selected color or no balloons available');
-      return [];
-    }
-    
-    const selectedRgb = hexToRgbArr(normalizeHex(selectedHex));
-    console.log('Selected RGB:', selectedRgb);
-    
-    // Group balloons by brand
-    const grouped = {};
-    let validBalloons = 0;
-    
-    balloons.forEach(balloon => {
-      if (!balloon.brand || !balloon.hex) {
-        return;
-      }
-      validBalloons++;
-      if (!grouped[balloon.brand]) grouped[balloon.brand] = [];
-      grouped[balloon.brand].push(balloon);
-    });
-    
-    console.log('Valid balloons processed:', validBalloons);
-    console.log('Grouped balloons by brand:', Object.keys(grouped).length);
-    
-    if (validBalloons === 0) {
-      console.error('No valid balloons to process');
-      return [];
-    }
-    
-    const closest = [];
-    Object.entries(grouped).forEach(([brand, arr]) => {
-      let minDist = Infinity;
-      let best = null;
-      
-      arr.forEach(balloon => {
-        if (!balloon.hex) return;
-        const balloonRgb = hexToRgbArr(normalizeHex(balloon.hex));
-        const dist = colorDistance(selectedRgb, balloonRgb);
-        if (dist < minDist) {
-          minDist = dist;
-          best = balloon;
-        }
-      });
-      
-      if (best) {
-        closest.push(best);
-      }
-    });
-    
-    // Sort by color distance
-    closest.sort((a, b) => {
-      const distA = colorDistance(selectedRgb, hexToRgbArr(normalizeHex(a.hex)));
-      const distB = colorDistance(selectedRgb, hexToRgbArr(normalizeHex(b.hex)));
-      return distA - distB;
-    });
-    
-    return closest;
-  }
-
-  const handleFindMatch = async () => {
-    try {
-      console.log('Find Match clicked');
-      console.log('Selected color:', localSelectedColor);
-
-      if (!localSelectedColor) {
-        console.log('No color selected');
-        setMessage('Please select a color first');
-        return;
-      }
-
-      setMessage('Analyzing color and finding matches...');
-      
-      // First get all balloons from backend
-      const balloonsResponse = await fetch('https://balloon-backend.vercel.app/api/auth/products', {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include'
-      });
-
-      if (!balloonsResponse.ok) {
-        throw new Error(`HTTP error! status: ${balloonsResponse.status}`);
-      }
-
-      const balloonsData = await balloonsResponse.json();
-      const mappedBalloons = balloonsData.map(item => ({
-        _id: item._id,
-        brand: item.brand,
-        color: item.singleColour || item.color,
-        hex: normalizeHex(item.singleHex),
-        image: item.balloonImage || item.image,
-        newColour: item.newColour,
-        mixedColourTitle: item.mixedColourTitle,
-        mixedHex: normalizeHex(item.mixedHex),
-        outsideColour: item.outsideColour,
-        outsideHex: normalizeHex(item.outsideHex),
-        insideColour: item.insideColour,
-        insideHex: normalizeHex(item.insideHex)
-      }));
-
-      // Use LangChain to analyze the color and find matches
-      const colorAnalysis = await colorMatchingService.analyzeColor(localSelectedColor);
-      console.log('Color Analysis:', colorAnalysis);
-
-      // Find matches using both color analysis and color distance
-      const matches = await colorMatchingService.findMatchingBalloons(localSelectedColor, mappedBalloons);
-      console.log('AI Matches:', matches);
-
-      // Combine AI matches with color distance for better results
-      const closestMatches = findClosestBalloons(localSelectedColor);
-      console.log('Color Distance Matches:', closestMatches);
-
-      // Merge and deduplicate matches
-      const allMatches = [...matches.matches, ...closestMatches];
-      const uniqueMatches = Array.from(new Map(allMatches.map(item => [item._id, item])).values());
-
-      // Sort by match score if available, otherwise by color distance
-      uniqueMatches.sort((a, b) => {
-        if (a.matchScore && b.matchScore) {
-          return b.matchScore - a.matchScore;
-        }
-        return 0;
-      });
-
-      setClosestBalloons(uniqueMatches);
-      setShowMatches(true);
-      setMessage('Found matching balloons!');
-    } catch (error) {
-      console.error('Error finding matches:', error);
-      setMessage('Error finding matches. Please try again.');
-    }
-  };
-
-  // Magnifier settings
-  const MAGNIFIER_SIZE = 100;
-  const MAGNIFIER_ZOOM = 3;
-
   const handleCanvasMouseEnter = () => setMagnifierVisible(true);
   const handleCanvasMouseLeave = () => setMagnifierVisible(false);
 
@@ -502,7 +233,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
       <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 md:p-12 lg:p-16 min-h-[80vh]">
         <div className="w-full max-w-4xl mx-auto bg-gray-800/80 backdrop-blur-lg rounded-3xl shadow-2xl p-6 sm:p-10 border border-purple-500/20">
-          <div className="mb-6 text-2xl font-bold text-white">Main Colour Blending Tool</div>
+          <div className="mb-6 text-2xl font-bold text-white">Color Picker Tool</div>
           <div className="flex flex-col md:flex-row gap-8 items-start justify-center">
             {/* Left: Upload or Image */}
             <div className="flex flex-col items-center w-full md:w-1/2">
@@ -522,110 +253,90 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
                   />
                 </button>
               ) : (
-                <div className="flex items-center gap-2">
-                  <div className="relative w-64 h-64">
-                    <img
-                      src={imageSrc}
-                      alt="Uploaded"
-                      className="w-64 h-64 object-cover rounded-xl border border-purple-200 mb-2 absolute top-0 left-0 z-0"
-                    />
-                    <canvas
-                      ref={canvasRef}
-                      onClick={selectingSecond ? (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (!imageSrc) return;
-                        setSecondColor(hoveredColor);
-                        setSelectingSecond(false);
-                        setMessage(`Second color selected: ${hoveredColor}`);
-                      } : handleImageClick}
-                      onMouseMove={handleCanvasMouseMove}
-                      onMouseEnter={handleCanvasMouseEnter}
-                      onMouseLeave={handleCanvasMouseLeave}
-                      width={256}
-                      height={256}
-                      className="w-64 h-64 rounded-xl cursor-crosshair absolute top-0 left-0 z-10"
-                      style={{ pointerEvents: 'auto', background: 'transparent' }}
-                    />
-                    {magnifierVisible && (
-                      <div
-                        style={{
-                          position: 'absolute',
-                          left: Math.max(0, Math.min(magnifierPos.x + 20, 256 - MAGNIFIER_SIZE)),
-                          top: Math.max(0, Math.min(magnifierPos.y - MAGNIFIER_SIZE / 2, 256 - MAGNIFIER_SIZE)),
-                          width: MAGNIFIER_SIZE,
-                          height: MAGNIFIER_SIZE,
-                          pointerEvents: 'none',
-                          border: '2px solid #a78bfa',
-                          borderRadius: '50%',
-                          overflow: 'hidden',
-                          boxShadow: '0 2px 8px rgba(80,0,80,0.15)',
-                          zIndex: 20,
-                          background: '#fff',
+                <div className="relative w-64 h-64">
+                  <img
+                    src={imageSrc}
+                    alt="Uploaded"
+                    className="w-64 h-64 object-cover rounded-xl border border-purple-200 mb-2 absolute top-0 left-0 z-0"
+                  />
+                  <canvas
+                    ref={canvasRef}
+                    onClick={handleImageClick}
+                    onMouseMove={handleCanvasMouseMove}
+                    onMouseEnter={handleCanvasMouseEnter}
+                    onMouseLeave={handleCanvasMouseLeave}
+                    width={256}
+                    height={256}
+                    className="w-64 h-64 rounded-xl cursor-crosshair absolute top-0 left-0 z-10"
+                    style={{ pointerEvents: 'auto', background: 'transparent' }}
+                  />
+                  {magnifierVisible && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        left: Math.max(0, Math.min(magnifierPos.x + 20, 256 - MAGNIFIER_SIZE)),
+                        top: Math.max(0, Math.min(magnifierPos.y - MAGNIFIER_SIZE / 2, 256 - MAGNIFIER_SIZE)),
+                        width: MAGNIFIER_SIZE,
+                        height: MAGNIFIER_SIZE,
+                        pointerEvents: 'none',
+                        border: '2px solid #a78bfa',
+                        borderRadius: '50%',
+                        overflow: 'hidden',
+                        boxShadow: '0 2px 8px rgba(80,0,80,0.15)',
+                        zIndex: 20,
+                        background: '#fff',
+                      }}
+                    >
+                      <canvas
+                        width={MAGNIFIER_SIZE}
+                        height={MAGNIFIER_SIZE}
+                        ref={el => {
+                          if (!el || !canvasRef.current) return;
+                          const ctx = el.getContext('2d');
+                          const mainCanvas = canvasRef.current;
+                          const mainCtx = mainCanvas.getContext('2d');
+                          const { x, y } = magnifierPos;
+                          const scaleX = mainCanvas.width / 256;
+                          const scaleY = mainCanvas.height / 256;
+                          const sx = (x * scaleX) - MAGNIFIER_SIZE / (2 * MAGNIFIER_ZOOM);
+                          const sy = (y * scaleY) - MAGNIFIER_SIZE / (2 * MAGNIFIER_ZOOM);
+                          ctx.clearRect(0, 0, MAGNIFIER_SIZE, MAGNIFIER_SIZE);
+                          ctx.save();
+                          ctx.beginPath();
+                          ctx.arc(MAGNIFIER_SIZE/2, MAGNIFIER_SIZE/2, MAGNIFIER_SIZE/2, 0, 2 * Math.PI);
+                          ctx.clip();
+                          ctx.drawImage(
+                            mainCanvas,
+                            sx,
+                            sy,
+                            MAGNIFIER_SIZE / MAGNIFIER_ZOOM,
+                            MAGNIFIER_SIZE / MAGNIFIER_ZOOM,
+                            0,
+                            0,
+                            MAGNIFIER_SIZE,
+                            MAGNIFIER_SIZE
+                          );
+                          ctx.restore();
                         }}
-                      >
-                        <canvas
-                          width={MAGNIFIER_SIZE}
-                          height={MAGNIFIER_SIZE}
-                          ref={el => {
-                            if (!el || !canvasRef.current) return;
-                            const ctx = el.getContext('2d');
-                            const mainCanvas = canvasRef.current;
-                            const mainCtx = mainCanvas.getContext('2d');
-                            const { x, y } = magnifierPos;
-                            // Calculate source area for magnifier
-                            const scaleX = mainCanvas.width / 256;
-                            const scaleY = mainCanvas.height / 256;
-                            const sx = (x * scaleX) - MAGNIFIER_SIZE / (2 * MAGNIFIER_ZOOM);
-                            const sy = (y * scaleY) - MAGNIFIER_SIZE / (2 * MAGNIFIER_ZOOM);
-                            ctx.clearRect(0, 0, MAGNIFIER_SIZE, MAGNIFIER_SIZE);
-                            ctx.save();
-                            ctx.beginPath();
-                            ctx.arc(MAGNIFIER_SIZE/2, MAGNIFIER_SIZE/2, MAGNIFIER_SIZE/2, 0, 2 * Math.PI);
-                            ctx.clip();
-                            ctx.drawImage(
-                              mainCanvas,
-                              sx,
-                              sy,
-                              MAGNIFIER_SIZE / MAGNIFIER_ZOOM,
-                              MAGNIFIER_SIZE / MAGNIFIER_ZOOM,
-                              0,
-                              0,
-                              MAGNIFIER_SIZE,
-                              MAGNIFIER_SIZE
-                            );
-                            ctx.restore();
-                          }}
-                          style={{ width: MAGNIFIER_SIZE, height: MAGNIFIER_SIZE, display: 'block' }}
-                        />
-                        <div style={{
-                          position: 'absolute',
-                          bottom: 4,
-                          left: 0,
-                          width: '100%',
-                          textAlign: 'center',
-                          fontSize: 12,
-                          color: '#333',
-                          background: 'rgba(255,255,255,0.7)',
-                          borderRadius: 8,
-                          padding: '2px 0',
-                        }}>{magnifierColor}</div>
-                      </div>
-                    )}
-                  </div>
-                  {/* + button for second color */}
-                  <button
-                    type="button"
-                    className="ml-2 w-8 h-8 flex items-center justify-center rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xl font-bold shadow border-2 border-purple-500/40 hover:scale-110 transition"
-                    title="Select second color"
-                    onClick={() => setSelectingSecond(true)}
-                    disabled={selectingSecond}
-                  >
-                    +
-                  </button>
+                        style={{ width: MAGNIFIER_SIZE, height: MAGNIFIER_SIZE, display: 'block' }}
+                      />
+                      <div style={{
+                        position: 'absolute',
+                        bottom: 4,
+                        left: 0,
+                        width: '100%',
+                        textAlign: 'center',
+                        fontSize: 12,
+                        color: '#333',
+                        background: 'rgba(255,255,255,0.7)',
+                        borderRadius: 8,
+                        padding: '2px 0',
+                      }}>{magnifierColor}</div>
+                    </div>
+                  )}
                 </div>
               )}
-              {/* Unified color box below image/canvas, themed */}
+              {/* Color display box */}
               {(magnifierVisible ? hoveredColor : localSelectedColor) && (
                 <div className="mt-2 flex flex-col items-center z-20">
                   <div className="flex items-center gap-2 bg-gray-800/80 border border-purple-500/20 rounded-lg px-4 py-2 shadow" style={{ width: 'max-content' }}>
@@ -637,22 +348,9 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
                   </div>
                 </div>
               )}
-              {/* Second color box, if selected */}
-              {secondColor && (
-                <div className="mt-2 flex flex-col items-center z-20">
-                  <div className="flex items-center gap-2 bg-gray-800/80 border border-pink-400 rounded-lg px-4 py-2 shadow" style={{ width: 'max-content' }}>
-                    <span className="w-6 h-6 rounded-full border-2 border-pink-400" style={{ backgroundColor: secondColor }}></span>
-                    <span className="font-mono text-base text-white">{secondColor}</span>
-                  </div>
-                  <div className="text-xs font-mono text-pink-200 mt-1">
-                    RGB: {hexToRgb(secondColor)}
-                  </div>
-                </div>
-              )}
             </div>
-            {/* Right: Instructions and Logo */}
+            {/* Right: Instructions */}
             <div className="flex-1 flex flex-col items-center md:items-start bg-gray-800/80 backdrop-blur-lg rounded-3xl shadow-2xl p-6 border border-purple-500/20 min-h-[300px]">
-              <img src="/logo192.png" alt="Logo" className="w-16 h-16 mb-4" />
               <div className="flex flex-col gap-3 w-full">
                 <div className="flex items-center gap-2">
                   <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full px-3 py-1 text-sm font-bold shadow">1</span>
@@ -665,56 +363,14 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full px-3 py-1 text-sm font-bold shadow">2</span>
-                  <span className="text-white font-semibold">Drag the circle to pick a colour</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full px-3 py-1 text-sm font-bold shadow">3</span>
-                  <button
-                    onClick={handleFindMatch}
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-lg font-bold shadow-xl border-2 border-purple-500/40 hover:scale-105 hover:shadow-2xl transition"
-                    disabled={!localSelectedColor}
-                  >
-                    Click to find match
-                  </button>
+                  <span className="text-white font-semibold">Click on the image to select a color</span>
                 </div>
               </div>
               <div className="mt-4 text-xs text-gray-300">
-                Balloon Colour Blending will provide a suggested or nearest swatch colour match to the uploaded image. The colour match cannot be guaranteed and will depend on the quality and shading of the image and the device used to upload.
+                The color picker will help you select colors from your uploaded image. Hover over the image to see a magnified view and click to select a color.
               </div>
             </div>
           </div>
-          {/* Brand color cards */}
-          {showMatches && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mt-8">
-              {closestBalloons.map((balloon) => (
-                <div key={balloon._id || balloon.id || balloon.hex + balloon.brand} className="flex flex-col items-center bg-gray-900/60 rounded-xl p-3 shadow border border-purple-500/20">
-                  <div className="mb-2 text-base font-bold text-purple-200 capitalize">{balloon.brand}</div>
-                  {balloon.image ? (
-                    <img src={balloon.image} alt={balloon.color} className="w-12 h-12 rounded-full border-2 border-purple-200 mb-2 object-cover" />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full border-2 border-purple-200 mb-2" style={{ backgroundColor: balloon.hex }} />
-                  )}
-                  <div className="text-xs text-gray-200 font-semibold">{balloon.newColour || balloon.color}</div>
-                  <div className="text-xs text-gray-400 font-mono mt-1">{balloon.hex}</div>
-                  {balloon.mixedColourTitle && (
-                    <div className="text-xs text-gray-300 mt-1">
-                      <span className="text-purple-300">Mixed:</span> {balloon.mixedColourTitle}
-                    </div>
-                  )}
-                  {balloon.outsideColour && (
-                    <div className="text-xs text-gray-300">
-                      <span className="text-purple-300">Outside:</span> {balloon.outsideColour}
-                    </div>
-                  )}
-                  {balloon.insideColour && (
-                    <div className="text-xs text-gray-300">
-                      <span className="text-purple-300">Inside:</span> {balloon.insideColour}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </div>
     </div>
