@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 // import Header from './Header';
-import Footer from './Footer';
+// import Footer from './Footer';
 import { Link } from 'react-router-dom';
 
 function RegisterPage() {
