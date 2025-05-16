@@ -5,7 +5,7 @@ import BalloonTooltip from './BalloonTooltip';
 
 const HeroLanding = () => {
   const navigate = useNavigate();
-  const [hoveredEvent, setHoveredEvent] = useState(null);
+  const [hoveredEventState, setHoveredEventState] = useState(null);
   const [fadeIn, setFadeIn] = useState(false);
 
   useEffect(() => {
@@ -90,10 +90,10 @@ const HeroLanding = () => {
                   key={event.type}
                   className="relative group cursor-pointer"
                   onClick={() => handleEventClick(event.type)}
-                  onMouseEnter={() => setHoveredEvent(event.type)}
-                  onMouseLeave={() => setHoveredEvent(null)}
+                  onMouseEnter={() => setHoveredEventState(event.type)}
+                  onMouseLeave={() => setHoveredEventState(null)}
                 >
-                  <div className="bg-gray-800/80 backdrop-blur-lg rounded-2xl p-6 border border-purple-500/20 transform transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-purple-500/40">
+                  <div className={`bg-gray-800/80 backdrop-blur-lg rounded-2xl p-6 border ${hoveredEventState === event.type ? 'border-purple-500/40' : 'border-purple-500/20'} transform transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:border-purple-500/40`}>
                     <div className="text-4xl mb-4">{event.icon}</div>
                     <h3 className="text-xl font-bold text-white mb-2">{event.type}</h3>
                     <p className="text-gray-400">{event.description}</p>
