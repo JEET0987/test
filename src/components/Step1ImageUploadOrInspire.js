@@ -287,38 +287,6 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
             </div>
           </div>
 
-          {/* Color Analysis Section */}
-          {colorAnalysis && (
-            <div className="mt-8 bg-gray-800/80 backdrop-blur-lg rounded-xl p-6 border border-purple-500/20">
-              <h3 className="text-xl font-bold text-white mb-4">Color Theory Analysis</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {Object.entries(colorAnalysis).map(([relationship, colors]) => (
-                  <div key={relationship} className="bg-gray-700/50 rounded-xl p-4 border border-purple-500/20">
-                    <h4 className="text-lg font-semibold text-purple-200 mb-3 capitalize">
-                      {relationship.replace(/([A-Z])/g, ' $1').trim()}
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {Array.isArray(colors) ? colors.map((color, index) => (
-                        <div
-                          key={index}
-                          className="w-8 h-8 rounded-full border-2 border-purple-200"
-                          style={{ backgroundColor: color }}
-                          title={color}
-                        />
-                      )) : (
-                        <div
-                          className="w-8 h-8 rounded-full border-2 border-purple-200"
-                          style={{ backgroundColor: colors }}
-                          title={colors}
-                        />
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* Matching Balloons Section */}
           {showMatches && (
             <div className="mt-8">
