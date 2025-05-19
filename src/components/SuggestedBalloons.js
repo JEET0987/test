@@ -9,12 +9,13 @@ const SuggestedBalloons = () => {
   const { matchingBalloons } = location.state || { matchingBalloons: {} };
 
   const handleAddToCart = (balloon) => {
-    console.log('Adding balloon to cart:', balloon); // Debug log
+    console.log('Balloon object in handleAddToCart:', balloon); // Debug log
+    const colorName = balloon["Single Colour"] || balloon["Single Colour "] || balloon["SingleColour"] || 'Unknown';
     const cartItem = {
       id: balloon["Balloon Image"], // Using image URL as unique ID
-      name: balloon["Single Colour"],
+      name: colorName,
       brand: balloon["Brand"],
-      color: balloon["Single Colour"], // Changed from New Colour to Single Colour
+      color: colorName, // Use the robust color name
       image: balloon["Balloon Image"],
       price: 2.99, // Default price, you can adjust this
       quantity: 1
@@ -23,7 +24,7 @@ const SuggestedBalloons = () => {
     addToCart(cartItem);
     
     // Show success toast
-    toast.success(`Single Colour: ${balloon["Single Colour"]} balloon added to cart!`, {
+    toast.success(`Single Colour: ${colorName} balloon added to cart!`, {
       position: "top-right",
       autoClose: 2000,
       hideProgressBar: false,
