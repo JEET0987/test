@@ -1,7 +1,7 @@
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://balloon-backend.vercel.app';
 
 export const API_ENDPOINTS = {
-  COLOR_MATCH: '/api/color-match',
+  COLOR_MATCH: '/color-match',
   AUTH: {
     REGISTER: '/api/auth/register',
     LOGIN: '/api/auth/login',
