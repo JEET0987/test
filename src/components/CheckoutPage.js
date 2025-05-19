@@ -6,12 +6,14 @@ import Footer from './Footer';
 
 const CheckoutPage = ({ onBack }) => {
   const navigate = useNavigate();
-  const { cartItems, totalPrice, clearCart } = useContext(CartContext);
+  const { cart, clearCart } = useContext(CartContext);
   const stripe = useStripe();
   const elements = useElements();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+
+  const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const handleCheckout = async (event) => {
     event.preventDefault();
@@ -70,7 +72,7 @@ const CheckoutPage = ({ onBack }) => {
           <div className="mb-8">
             <h3 className="text-xl font-semibold text-white mb-4">Your Cart</h3>
             <div className="bg-gray-700/50 rounded-xl p-6 space-y-4">
-              {cartItems.map((item) => (
+              {cart.map((item) => (
                 <div key={item.id} className="flex items-center justify-between py-2 border-b border-gray-600">
                   <div className="flex items-center gap-4">
                     {item.image && (
