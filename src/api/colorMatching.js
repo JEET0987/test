@@ -2,9 +2,8 @@ import { API_ENDPOINTS, makeApiRequest } from './config';
 
 export const findMatchingColors = async (color) => {
   try {
-    const response = await makeApiRequest(API_ENDPOINTS.COLOR_MATCH, {
-      method: 'POST',
-      body: JSON.stringify({ color }),
+    const response = await makeApiRequest(`${API_ENDPOINTS.COLOR_MATCH}?color=${encodeURIComponent(color)}`, {
+      method: 'GET',
     });
 
     if (!response || !response.matches) {
