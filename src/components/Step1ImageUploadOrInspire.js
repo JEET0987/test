@@ -16,7 +16,6 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
   const [selectingSecond, setSelectingSecond] = useState(false);
   const [matchingBalloons, setMatchingBalloons] = useState({});
   const [showMatches, setShowMatches] = useState(false);
-  const [colorAnalysis, setColorAnalysis] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   useEffect(() => {
@@ -35,11 +34,9 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
         }
 
         setMatchingBalloons(response.matches);
-        setColorAnalysis(response.colorAnalysis);
         setShowMatches(true);
       } catch (error) {
         console.error('Error finding matches:', error);
-        // You might want to show an error message to the user here
         setShowMatches(false);
       } finally {
         setIsAnalyzing(false);
