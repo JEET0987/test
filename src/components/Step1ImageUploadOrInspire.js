@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { findMatchingColors } from '../api/colorMatching';
+import { useNavigate } from 'react-router-dom';
 
 const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) => {
+  const navigate = useNavigate();
   const [imageSrc, setImageSrc] = useState(null);
   const [localSelectedColor, setLocalSelectedColor] = useState(null);
   const canvasRef = useRef(null);
@@ -124,6 +126,10 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     const g = (bigint >> 8) & 255;
     const b = bigint & 255;
     return `${r}, ${g}, ${b}`;
+  };
+
+  const handleNext = () => {
+    navigate('/suggested-balloons', { state: { matchingBalloons } });
   };
 
   return (
@@ -320,6 +326,14 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
                     </div>
                   </div>
                 ))}
+              </div>
+              <div className="mt-6 flex justify-center">
+                <button
+                  onClick={handleNext}
+                  className="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-8 py-3 rounded-lg font-bold shadow-xl border-2 border-purple-500/40 hover:scale-105 hover:shadow-2xl transition focus:outline-none"
+                >
+                  View Suggested Balloons
+                </button>
               </div>
             </div>
           )}

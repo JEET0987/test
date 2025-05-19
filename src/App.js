@@ -21,6 +21,7 @@ import { Elements } from '@stripe/react-stripe-js';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
+import SuggestedBalloons from './components/SuggestedBalloons';
 
 const stripePromise = loadStripe('pk_test_12345ReplaceWithYourOwnKey');
 
@@ -166,6 +167,7 @@ function App() {
                     <Route path="/thank-you" element={<ThankYouPage />} />
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/login" element={<LoginPage />} />
+                    <Route path="/suggested-balloons" element={<SuggestedBalloons />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
                 </Elements>
