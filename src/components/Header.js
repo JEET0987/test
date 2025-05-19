@@ -7,10 +7,10 @@ const Header = () => {
   const navigate = useNavigate();
   const cartContext = useContext(CartContext);
   const { user, logout } = useAuth();
-  const cartItems = cartContext?.cartItems || [];
+  const cart = cartContext?.cart || [];
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+  const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
 
   const handleNavigation = (path) => {
     navigate(path);
