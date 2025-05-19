@@ -1,6 +1,7 @@
 import React from 'react';
 import { useCart } from '../context/CartContext';
 import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const SuggestedBalloons = () => {
   const { addToCart } = useCart();
@@ -16,6 +17,16 @@ const SuggestedBalloons = () => {
       image: balloon["Balloon Image"],
       price: 2.99, // Default price, you can adjust this
       quantity: 1
+    });
+    
+    // Show success toast
+    toast.success(`${balloon["Single Colour"]} balloon added to cart!`, {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
     });
   };
 

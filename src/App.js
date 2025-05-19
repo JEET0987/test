@@ -176,7 +176,7 @@ function App() {
             <Footer />
             <ToastContainer
               position="top-right"
-              autoClose={3000}
+              autoClose={2000}
               hideProgressBar={false}
               newestOnTop
               closeOnClick
@@ -184,7 +184,8 @@ function App() {
               pauseOnFocusLoss
               draggable
               pauseOnHover
-              theme="light"
+              theme="dark"
+              style={{ zIndex: 9999 }}
             />
           </div>
         </Router>

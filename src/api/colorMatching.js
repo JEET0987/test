@@ -1,16 +1,17 @@
-import axios from 'axios';
+import { API_ENDPOINTS, makeApiRequest } from './config';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://balloon-backend.vercel.app';
-
-export const findMatchingColors = async (selectedColor, threshold = 50) => {
+export const findMatchingColors = async (color) => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/api/color-match`, {
-      params: {
-        color: selectedColor,
-        threshold
-      }
+    const response = await makeApiRequest(API_ENDPOINTS.COLOR_MATCH, {
+      method: 'POST',
+      body: JSON.stringify({ color }),
     });
-    return response.data;
+
+    if (!response || !response.matches) {
+      throw new Error('Invalid response from server');
+    }
+
+    return response;
   } catch (error) {
     console.error('Error finding matching colors:', error);
     throw error;
