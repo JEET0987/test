@@ -7,7 +7,7 @@ const Header = () => {
   const navigate = useNavigate();
   const cartContext = useContext(CartContext);
   const { user, logout } = useAuth();
-  const cart = cartContext?.cart || [];
+  const { cart, clearCart } = cartContext;
   const [isCartOpen, setIsCartOpen] = useState(false);
 
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
@@ -121,8 +121,40 @@ const Header = () => {
                 )}
               </button>
               {isCartOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-gray-700 text-white rounded-md shadow-lg p-4 z-50">
-                  <p>Cart is open. Items: {cartItemCount}</p>
+                <div className="absolute right-0 mt-2 w-72 bg-gray-700 text-white rounded-md shadow-lg p-4 z-50">
+                  <p className="font-bold mb-2">Cart is open. Items: {cartItemCount}</p>
+                  {cart.length === 0 ? (
+                    <p className="text-sm text-gray-300">Your cart is empty.</p>
+                  ) : (
+                    <div>
+                      <ul className="max-h-48 overflow-y-auto mb-2 divide-y divide-gray-600">
+                        {cart.map((item) => (
+                          <li key={item.id} className="flex items-center gap-2 py-2">
+                            <img src={item.image} alt={item.name} className="w-10 h-10 rounded bg-white/20 object-contain" />
+                            <div className="flex-1">
+                              <div className="font-semibold">{item.name}</div>
+                              <div className="text-xs text-gray-300">Qty: {item.quantity}</div>
+                            </div>
+                            <div className="text-xs font-mono">${(item.price * item.quantity).toFixed(2)}</div>
+                          </li>
+                        ))}
+                      </ul>
+                      <div className="flex gap-2 mt-2">
+                        <button
+                          onClick={() => { clearCart(); }}
+                          className="flex-1 bg-gray-600 hover:bg-gray-500 text-white py-1 px-2 rounded text-xs font-semibold"
+                        >
+                          Clear Cart
+                        </button>
+                        <button
+                          onClick={() => { setIsCartOpen(false); navigate('/checkout'); }}
+                          className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white py-1 px-2 rounded text-xs font-semibold"
+                        >
+                          Checkout
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
