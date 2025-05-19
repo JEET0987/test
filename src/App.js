@@ -15,7 +15,6 @@ import HeroLanding from './components/HeroLanding';
 import { AuthProvider } from './contexts/AuthContext';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import ColorMatchingTest from './components/ColorMatchingTest';
 
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
@@ -169,7 +168,6 @@ function App() {
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/suggested-balloons" element={<SuggestedBalloons />} />
-                    <Route path="/test-color-matching" element={<ColorMatchingTest />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
                 </Elements>
