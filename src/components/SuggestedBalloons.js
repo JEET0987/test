@@ -9,15 +9,18 @@ const SuggestedBalloons = () => {
   const { matchingBalloons } = location.state || { matchingBalloons: {} };
 
   const handleAddToCart = (balloon) => {
-    addToCart({
+    console.log('Adding balloon to cart:', balloon); // Debug log
+    const cartItem = {
       id: balloon["Balloon Image"], // Using image URL as unique ID
       name: balloon["Single Colour"],
       brand: balloon["Brand"],
-      color: balloon["New Colour"],
+      color: balloon["Single Colour"], // Changed from New Colour to Single Colour
       image: balloon["Balloon Image"],
       price: 2.99, // Default price, you can adjust this
       quantity: 1
-    });
+    };
+    console.log('Cart item to be added:', cartItem); // Debug log
+    addToCart(cartItem);
     
     // Show success toast
     toast.success(`${balloon["Single Colour"]} balloon added to cart!`, {
@@ -61,7 +64,6 @@ const SuggestedBalloons = () => {
                     className="w-32 h-32 object-contain rounded-lg bg-white/10 p-2"
                   />
                   <span className="text-sm text-white mt-2">{balloon["Single Colour"]}</span>
-                  <span className="text-xs text-purple-300 mt-1">Color: {balloon["New Colour"]}</span>
                   <button
                     onClick={() => handleAddToCart(balloon)}
                     className="mt-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-2 rounded-lg font-bold shadow-xl border-2 border-purple-500/40 hover:scale-105 hover:shadow-2xl transition focus:outline-none"
