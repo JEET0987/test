@@ -1,8 +1,11 @@
 import React from 'react';
 import { useCart } from '../context/CartContext';
+import { useLocation } from 'react-router-dom';
 
-const SuggestedBalloons = ({ matchingBalloons }) => {
+const SuggestedBalloons = () => {
   const { addToCart } = useCart();
+  const location = useLocation();
+  const { matchingBalloons } = location.state || { matchingBalloons: {} };
 
   const handleAddToCart = (balloon) => {
     addToCart({
