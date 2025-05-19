@@ -253,7 +253,7 @@ const Step4ProductDisplay = ({ selectedTheme = 'Default', onNext }) => {
         quantity: quantity
       };
       addToCart(productToAdd, quantity);
-      toast.success(`${quantity} ${product.name} added to cart`);
+      toast.success(`${quantity} ${product.name} added to basket`);
       setQuantities((prev) => ({ ...prev, [product.id]: 0 }));
     }
   };
@@ -320,7 +320,9 @@ const Step4ProductDisplay = ({ selectedTheme = 'Default', onNext }) => {
                 <h3 className="text-lg font-semibold mb-2">{product.name}</h3>
                 <p className="text-sm mb-4">{product.description}</p>
                 <div className="flex justify-between items-center mb-4">
-                  <span className="font-semibold">${product.price}</span>
+                  <span className="text-xs sm:text-sm text-muted-foreground">
+                    £{product.price.toFixed(2)}
+                  </span>
                   <span className="text-sm">{product.stock} in stock</span>
                 </div>
                 <div className="flex items-center gap-4 mb-4">
@@ -352,7 +354,7 @@ const Step4ProductDisplay = ({ selectedTheme = 'Default', onNext }) => {
                     }}
                     className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all duration-300"
                   >
-                    Add to Cart
+                    Add to Basket
                   </button>
                 </div>
               </div>

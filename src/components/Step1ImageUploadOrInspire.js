@@ -133,7 +133,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
       <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 md:p-12 lg:p-16 min-h-[80vh]">
         <div className="w-full max-w-4xl mx-auto bg-gray-800/80 backdrop-blur-lg rounded-3xl shadow-2xl p-6 sm:p-10 border border-purple-500/20">
-          <div className="mb-6 text-2xl font-bold text-white">Color Picker Tool</div>
+          <div className="mb-6 text-2xl font-bold text-white">Colour Picker Tool</div>
           <div className="flex flex-col md:flex-row gap-8 items-start justify-center">
             <div className="flex flex-col items-center w-full md:w-1/2">
               {!imageSrc ? (
@@ -276,7 +276,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full px-3 py-1 text-sm font-bold shadow">2</span>
-                  <span className="text-white font-semibold">Click on the image to pick a color</span>
+                  <span className="text-white font-semibold">Click on the image to pick a colour</span>
                 </div>
                 {localSelectedColor && (
                   <button
@@ -319,7 +319,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
                         className="w-24 h-24 object-contain rounded-lg bg-white/10 p-2"
                       />
                       <span className="text-sm text-white mt-2">{balloon["Single Colour"]}</span>
-                      <span className="text-xs text-purple-300 mt-1">Color: {balloon["New Colour"]}</span>
+                      <span className="text-xs text-purple-300 mt-1">Colour: {balloon["New Colour"]}</span>
                     </div>
                   </div>
                 ))}
@@ -340,7 +340,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
               <div className="bg-gray-800 rounded-xl p-6 border border-purple-500/20">
                 <div className="animate-spin rounded-full h-12 w-12 border-4 border-purple-500 border-t-transparent mx-auto"></div>
-                <p className="text-white mt-4 text-center">Analyzing colors with AI...</p>
+                <p className="text-white mt-4 text-center">Analyzing colours with AI...</p>
               </div>
             </div>
           )}

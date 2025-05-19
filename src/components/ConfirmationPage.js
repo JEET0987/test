@@ -4,7 +4,7 @@ import { CartContext } from '../context/CartContext';
 
 const ConfirmationPage = () => {
   const navigate = useNavigate();
-  const { cartItems } = useContext(CartContext);
+  const { cart } = useContext(CartContext);
 
   const handleConfirmOrder = () => {
     navigate('/checkout');
@@ -14,7 +14,7 @@ const ConfirmationPage = () => {
     navigate('/step5');
   };
 
-  const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
@@ -31,7 +31,7 @@ const ConfirmationPage = () => {
           <div className="bg-gray-700/50 rounded-xl p-6 mb-8">
             <h3 className="text-xl font-semibold text-white mb-4">Order Summary</h3>
             <div className="space-y-4">
-              {cartItems.map((item) => (
+              {cart.map((item) => (
                 <div key={item.id} className="flex justify-between items-center text-gray-300">
                   <div className="flex items-center gap-4">
                     {item.image && (
@@ -46,14 +46,14 @@ const ConfirmationPage = () => {
                       <p className="text-sm text-gray-400">Quantity: {item.quantity}</p>
                     </div>
                   </div>
-                  <p className="font-semibold text-white">${(item.price * item.quantity).toFixed(2)}</p>
+                  <p className="font-semibold text-white">£{(item.price * item.quantity).toFixed(2)}</p>
                 </div>
               ))}
             </div>
             <div className="border-t border-gray-600 mt-4 pt-4">
               <div className="flex justify-between items-center text-lg font-semibold text-white">
                 <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span>£{total.toFixed(2)}</span>
               </div>
             </div>
           </div>
@@ -144,7 +144,7 @@ const ConfirmationPage = () => {
               onClick={handleBackToCart}
               className="px-6 py-3 bg-gray-700/80 text-white rounded-xl font-semibold hover:bg-gray-600 transition-all duration-300 border border-purple-500/20"
             >
-              Back to Cart
+              Back to Basket
             </button>
             <button
               onClick={handleConfirmOrder}

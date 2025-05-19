@@ -24,7 +24,7 @@ const SuggestedBalloons = () => {
     addToCart(cartItem);
     
     // Show success toast
-    toast.success(`${colorName} balloon added to cart!`, {
+    toast.success(`${colorName} balloon added to basket!`, {
       position: "top-right",
       autoClose: 2000,
       hideProgressBar: false,
@@ -69,7 +69,7 @@ const SuggestedBalloons = () => {
                     onClick={() => handleAddToCart(balloon)}
                     className="mt-4 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-2 rounded-lg font-bold shadow-xl border-2 border-purple-500/40 hover:scale-105 hover:shadow-2xl transition focus:outline-none"
                   >
-                    Add to Cart
+                    Add to Basket
                   </button>
                 </div>
               </div>

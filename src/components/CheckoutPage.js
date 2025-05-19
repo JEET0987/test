@@ -68,9 +68,9 @@ const CheckoutPage = ({ onBack }) => {
             Checkout
           </h2>
           
-          {/* Cart Items */}
+          {/* Basket Items */}
           <div className="mb-8">
-            <h3 className="text-xl font-semibold text-white mb-4">Your Cart</h3>
+            <h3 className="text-xl font-semibold text-white mb-4">Your Basket</h3>
             <div className="bg-gray-700/50 rounded-xl p-6 space-y-4">
               {cart.map((item) => (
                 <div key={item.id} className="flex items-center justify-between py-2 border-b border-gray-600">
@@ -87,12 +87,12 @@ const CheckoutPage = ({ onBack }) => {
                       <p className="text-sm text-gray-400">Quantity: {item.quantity}</p>
                     </div>
                   </div>
-                  <p className="font-semibold text-white">${(item.price * item.quantity).toFixed(2)}</p>
+                  <p className="font-semibold text-white">£{(item.price * item.quantity).toFixed(2)}</p>
                 </div>
               ))}
               <div className="flex justify-between items-center pt-4 border-t border-gray-600">
                 <p className="text-lg font-semibold text-white">Total</p>
-                <p className="text-lg font-semibold text-white">${totalPrice.toFixed(2)}</p>
+                <p className="text-lg font-semibold text-white">£{totalPrice.toFixed(2)}</p>
               </div>
             </div>
           </div>
@@ -140,7 +140,7 @@ const CheckoutPage = ({ onBack }) => {
                 disabled={loading}
                 className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300 border border-purple-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Processing...' : `Pay $${totalPrice.toFixed(2)}`}
+                {loading ? 'Processing...' : `Pay £${totalPrice.toFixed(2)}`}
               </button>
             </div>
           </form>

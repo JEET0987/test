@@ -10,7 +10,7 @@ const Header = () => {
   const { cart, clearCart } = cartContext;
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const basketItemCount = cart.reduce((total, item) => total + item.quantity, 0);
 
   const handleNavigation = (path) => {
     navigate(path);
@@ -98,7 +98,7 @@ const Header = () => {
               <button
                 onClick={toggleCart}
                 className="relative text-gray-300 hover:text-purple-300 transition-colors focus:outline-none"
-                aria-label="Toggle cart"
+                aria-label="Toggle basket"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -114,17 +114,17 @@ const Header = () => {
                     d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m5-9v9m4-9v9m4-9l2 9"
                   />
                 </svg>
-                {cartItemCount > 0 && (
+                {basketItemCount > 0 && (
                   <span className="absolute -top-2 -right-2 bg-pink-600 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
-                    {cartItemCount}
+                    {basketItemCount}
                   </span>
                 )}
               </button>
               {isCartOpen && (
                 <div className="absolute right-0 mt-2 w-72 bg-gray-700 text-white rounded-md shadow-lg p-4 z-50">
-                  <p className="font-bold mb-2">Cart is open. Items: {cartItemCount}</p>
+                  <p className="font-bold mb-2">Basket is open. Items: {basketItemCount}</p>
                   {cart.length === 0 ? (
-                    <p className="text-sm text-gray-300">Your cart is empty.</p>
+                    <p className="text-sm text-gray-300">Your basket is empty.</p>
                   ) : (
                     <div>
                       <ul className="max-h-48 overflow-y-auto mb-2 divide-y divide-gray-600">
@@ -135,7 +135,7 @@ const Header = () => {
                               <div className="font-semibold">{item.name}</div>
                               <div className="text-xs text-gray-300">Qty: {item.quantity}</div>
                             </div>
-                            <div className="text-xs font-mono">${(item.price * item.quantity).toFixed(2)}</div>
+                            <div className="text-xs font-mono">£{(item.price * item.quantity).toFixed(2)}</div>
                           </li>
                         ))}
                       </ul>
@@ -144,7 +144,7 @@ const Header = () => {
                           onClick={() => { clearCart(); }}
                           className="flex-1 bg-gray-600 hover:bg-gray-500 text-white py-1 px-2 rounded text-xs font-semibold"
                         >
-                          Clear Cart
+                          Clear Basket
                         </button>
                         <button
                           onClick={() => { setIsCartOpen(false); navigate('/checkout'); }}
