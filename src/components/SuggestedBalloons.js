@@ -24,7 +24,7 @@ const SuggestedBalloons = () => {
     addToCart(cartItem);
     
     // Show success toast
-    toast.success(`Single Colour: ${colorName} balloon added to cart!`, {
+    toast.success(`${colorName} balloon added to cart!`, {
       position: "top-right",
       autoClose: 2000,
       hideProgressBar: false,
