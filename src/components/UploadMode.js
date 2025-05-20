@@ -28,7 +28,7 @@ const UploadMode = ({ selectedColor, setSelectedColor, onNext }) => {
     const y = e.clientY - rect.top;
     const pixel = ctx.getImageData(x, y, 1, 1).data;
     const hex = rgbToHex(pixel[0], pixel[1], pixel[2]);
-    setSelectedColor({ hex });
+    setSelectedColor(hex);
     setMessage(`You selected color: ${hex}`);
   };
 
