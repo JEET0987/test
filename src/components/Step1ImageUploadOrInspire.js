@@ -13,8 +13,6 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
   const [magnifierPos, setMagnifierPos] = useState({ x: 0, y: 0 });
   const [magnifierColor, setMagnifierColor] = useState('#ffffff');
   const [hoveredColor, setHoveredColor] = useState('#ffffff');
-  const [secondColor, setSecondColor] = useState(null);
-  const [selectingSecond, setSelectingSecond] = useState(false);
   const [matchingBalloons, setMatchingBalloons] = useState({});
   const [showMatches, setShowMatches] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -199,13 +197,7 @@ const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) 
                     <div className="relative w-64 h-64">
                       <canvas
                         ref={canvasRef}
-                        onClick={selectingSecond ? (e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          if (!imageSrc) return;
-                          setSecondColor(hoveredColor);
-                          setSelectingSecond(false);
-                        } : handleImageClick}
+                        onClick={handleImageClick}
                         onMouseMove={handleCanvasMouseMove}
                         onMouseEnter={() => setMagnifierVisible(true)}
                         onMouseLeave={() => setMagnifierVisible(false)}
