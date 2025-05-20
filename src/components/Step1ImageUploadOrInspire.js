@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { findMatchingColors } from '../api/colorMatching';
 import { useNavigate } from 'react-router-dom';
-import ColorMatcher from './ColorMatcher';
+import ColorMatcher from './ColorMatcher/ColorMatcher';
 
 const Step1ImageUploadOrInspire = ({ selectedColor, setSelectedColor, onNext }) => {
   const navigate = useNavigate();
